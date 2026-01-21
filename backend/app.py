@@ -11,6 +11,8 @@ app = Flask(
     static_folder=os.path.join(BASE_DIR, "static")
 )
 
+app.secret_key = "final-year-project"
+
 @app.route("/")
 def home():
     portal_url = request.url_root.rstrip("/") + "/roles"
@@ -25,6 +27,21 @@ def home():
 @app.route("/roles")
 def roles():
     return render_template("role_selection.html")
+
+# 🔐 ADMIN LOGIN
+@app.route("/admin/login")
+def admin_login():
+    return render_template("admin_login.html")
+
+# 📋 COORD LOGIN
+@app.route("/coord/login")
+def coord_login():
+    return render_template("coord_login.html")
+
+# 🏅 PLAYER REGISTER
+@app.route("/player/register")
+def player_register():
+    return render_template("player_register.html")
 
 @app.route("/health")
 def health():
