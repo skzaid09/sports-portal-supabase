@@ -10,9 +10,17 @@
 
 <div class="container text-center py-5">
   <h1 class="mb-4">🏆 College Sports Portal</h1>
-  <p class="lead">Scan QR or click below to continue</p>
+<img src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https://sports-portal-supabase.onrender.com"
+     alt="QR Code" style="margin:20px;">
 
-  <a href="/roles" class="btn btn-primary btn-lg mt-3">Enter Portal</a>
+  <p class="lead">Scan QR or click below to continue</p>
+ <img src="{{ url_for('static', filename='qr.png') }}" width="180">
+  <p class="mt-2">
+    Or open directly:  
+    <a href="https://sports-portal-supabase.onrender.com" target="_blank">
+      sports-portal-supabase.onrender.com
+    </a>
+  </p>
 </div>
 
 </body>
