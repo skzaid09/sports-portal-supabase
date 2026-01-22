@@ -1,17 +1,50 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Player Registration</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    .reg-option {
+      transition: transform 0.2s;
+      cursor: pointer;
+      height: 100%;
+    }
+    .reg-option:hover {
+      transform: scale(1.03);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    }
+  </style>
 </head>
 <body class="bg-light">
 
-<div class="container vh-100 d-flex justify-content-center align-items-center">
-  <div class="card p-4 shadow w-100" style="max-width:400px;">
-    <h4 class="text-center mb-3">Player Registration</h4>
-    <a href="/player/register/single" class="btn btn-success w-100 mb-2">Single Player</a>
-    <a href="/player/register/team" class="btn btn-primary w-100">Team</a>
+<div class="container py-5">
+  <div class="text-center mb-4">
+    <h2>🏅 Player Registration</h2>
+    <p class="text-muted">Select your registration type</p>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-6" onclick="location.href='/player/register/single'">
+      <div class="card reg-option p-4 text-center">
+        <div class="display-4">🧍</div>
+        <h5>Single Player</h5>
+        <p>For individual sports like Running, Shot Put etc.</p>
+      </div>
+    </div>
+
+    <div class="col-md-6" onclick="location.href='/player/register/team'">
+      <div class="card reg-option p-4 text-center">
+        <div class="display-4">🤝</div>
+        <h5>Team Registration</h5>
+        <p>For Cricket, Football, Volleyball etc.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="text-center mt-4">
+    <a href="/roles" class="btn btn-outline-secondary">← Back to Roles</a>
   </div>
 </div>
 
