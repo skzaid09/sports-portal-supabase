@@ -1,52 +1,75 @@
-import os
-from flask import Flask, render_template, request
-import qrcode, base64
-from io import BytesIO
+from flask import Flask, render_template, request, jsonify
+from supabase_client import supabase
 
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-
-app = Flask(
-    __name__,
-    template_folder=os.path.join(BASE_DIR, "templates"),
-    static_folder=os.path.join(BASE_DIR, "static")
-)
-
-app.secret_key = "final-year-project"
+app = Flask(__name__)
 
 @app.route("/")
-def home():
-    portal_url = request.url_root.rstrip("/") + "/roles"
-
-    qr = qrcode.make(portal_url)
-    buffer = BytesIO()
-    qr.save(buffer)
-    qr_base64 = base64.b64encode(buffer.getvalue()).decode()
-
-    return render_template("index.html", qr_code=qr_base64, portal_url=portal_url)
+def index():
+    return render_template("index.html")
 
 @app.route("/roles")
 def roles():
-    return render_template("role_selection.html")
-
-# 🔐 ADMIN LOGIN
-@app.route("/admin/login")
-def admin_login():
-    return render_template("admin_login.html")
-
-# 📋 COORD LOGIN
-@app.route("/coord/login")
-def coord_login():
-    return render_template("coord_login.html")
-
-# 🏅 PLAYER REGISTER
-@app.route("/player/register")
-def player_register():
-    return render_template("player_register.html")
+    return render_template("roles.html")
 
 @app.route("/health")
 def health():
     return "OK"
 
+# Admin
+@app.route("/admin/login")
+def admin_login():
+    return render_template("admin/login.html")
+
+@app.route("/admin/dashboard")
+def admin_dashboard():
+    users = supabase.table("users").select("*").execute().data
+    return render_template("admin/dashboard.html", users=users)
+
+# Coordinator
+@app.route("/coord/login")
+def coord_login():
+    return render_template("coord/login.html")
+
+@app.route("/coord/dashboard")
+def coord_dashboard():
+    matches = supabase.table("matches").select("*").execute().data
+    return render_template("coord/dashboard.html", matches=matches)
+
+# Player
+@app.route("/player/register")
+def player_register():
+    return render_template("player/register.html")
+
+@app.route("/player/register/single")
+def player_single():
+    return render_template("player/register_single.html")
+
+@app.route("/player/register/team")
+def player_team():
+    return render_template("player/register_team.html")
+
+@app.route("/player/api/register-single", methods=["POST"])
+def register_single():
+    supabase.table("players").insert(request.json).execute()
+    return jsonify(success=True)
+
+@app.route("/player/api/register-team", methods=["POST"])
+def register_team():
+    data = request.json
+    team = supabase.table("teams").insert({
+        "team_name": data["team_name"],
+        "department": data["department"],
+        "sport": data["sport"]
+    }).execute().data[0]
+
+    for p in data["players"]:
+        supabase.table("team_players").insert({
+            "team_id": team["id"],
+            "name": p["name"],
+            "roll_no": p["roll_no"]
+        }).execute()
+
+    return jsonify(success=True)
+
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port)
+    app.run()

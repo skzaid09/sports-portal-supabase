@@ -2,18 +2,18 @@
 <html>
 <head>
   <title>Player Registration</title>
-  <link rel="stylesheet" href="/static/css/style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-  <div class="container">
-    <h1>🏅 Player Registration</h1>
+<body class="bg-light">
 
-    <input placeholder="Name">
-    <input placeholder="Department">
-    <input placeholder="Roll Number">
-    <input placeholder="Sport">
-
-    <button class="btn green">Register</button>
+<div class="container vh-100 d-flex justify-content-center align-items-center">
+  <div class="card p-4 shadow w-100" style="max-width:400px;">
+    <h4 class="text-center mb-3">Player Registration</h4>
+    <a href="/player/register/single" class="btn btn-success w-100 mb-2">Single Player</a>
+    <a href="/player/register/team" class="btn btn-primary w-100">Team</a>
   </div>
+</div>
+
 </body>
 </html>
