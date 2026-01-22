@@ -1,4 +1,6 @@
 import os
+import traceback
+
 from flask import Flask, render_template, request, jsonify
 from supabase_client import supabase
 
@@ -73,5 +75,9 @@ def register_team():
     return jsonify(success=True)
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 10000))
-    app.run(host="0.0.0.0", port=port)
+    try:
+        port = int(os.environ.get("PORT", 10000))
+        app.run(host="0.0.0.0", port=port)
+    except Exception as e:
+        print("CRASH:", e)
+        traceback.print_exc()
