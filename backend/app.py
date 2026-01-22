@@ -1,10 +1,17 @@
+from flask import Flask, render_template, request, jsonify, redirect, url_for
+from supabase import create_client
 import os
-import traceback
 
-from flask import Flask, render_template, request, jsonify
-from supabase_client import supabase
+# ---------------- CONFIG ----------------
 
-app = Flask(__name__)
+SUPABASE_URL = os.environ.get("SUPABASE_URL")
+SUPABASE_KEY = os.environ.get("SUPABASE_KEY")
+
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+
+app = Flask(__name__, template_folder="../templates", static_folder="../static")
+
+# ---------------- ROUTES ----------------
 
 @app.route("/")
 def index():
@@ -14,70 +21,99 @@ def index():
 def roles():
     return render_template("roles.html")
 
-@app.route("/health")
-def health():
-    return "OK"
+# ---------------- ADMIN ----------------
 
-# Admin
 @app.route("/admin/login")
 def admin_login():
     return render_template("admin/login.html")
 
 @app.route("/admin/dashboard")
 def admin_dashboard():
-    users = supabase.table("users").select("*").execute().data
-    return render_template("admin/dashboard.html", users=users)
+    return render_template("admin/dashboard.html")
 
-# Coordinator
+# ---------------- COORDINATOR ----------------
+
 @app.route("/coord/login")
 def coord_login():
     return render_template("coord/login.html")
 
 @app.route("/coord/dashboard")
 def coord_dashboard():
-    matches = supabase.table("matches").select("*").execute().data
-    return render_template("coord/dashboard.html", matches=matches)
+    return render_template("coord/dashboard.html")
 
-# Player
+# ---------------- PLAYER ----------------
+
 @app.route("/player/register")
 def player_register():
     return render_template("player/register.html")
 
 @app.route("/player/register/single")
-def player_single():
+def player_register_single():
     return render_template("player/register_single.html")
 
 @app.route("/player/register/team")
-def player_team():
+def player_register_team():
     return render_template("player/register_team.html")
+
+# ---------------- API: REGISTER SINGLE PLAYER ----------------
 
 @app.route("/player/api/register-single", methods=["POST"])
 def register_single():
-    supabase.table("players").insert(request.json).execute()
-    return jsonify(success=True)
+    data = request.json
+    try:
+        supabase.table("players").insert({
+            "name": data["name"],
+            "department": data["department"],
+            "roll_no": data["roll_no"],
+            "sport": data["sport"]
+        }).execute()
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# ---------------- API: REGISTER TEAM ----------------
 
 @app.route("/player/api/register-team", methods=["POST"])
 def register_team():
     data = request.json
-    team = supabase.table("teams").insert({
-        "team_name": data["team_name"],
-        "department": data["department"],
-        "sport": data["sport"]
-    }).execute().data[0]
-
-    for p in data["players"]:
-        supabase.table("team_players").insert({
-            "team_id": team["id"],
-            "name": p["name"],
-            "roll_no": p["roll_no"]
+    try:
+        team = supabase.table("teams").insert({
+            "team_name": data["team_name"],
+            "department": data["department"],
+            "sport": data["sport"]
         }).execute()
 
-    return jsonify(success=True)
+        team_id = team.data[0]["id"]
+
+        for player in data["players"]:
+            supabase.table("team_players").insert({
+                "team_id": team_id,
+                "name": player["name"],
+                "roll_no": player["roll_no"]
+            }).execute()
+
+        return jsonify({"success": True})
+    except Exception as e:
+        return jsonify({"success": False, "error": str(e)}), 500
+
+# ---------------- LOGIN API ----------------
+
+@app.route("/api/login", methods=["POST"])
+def login():
+    data = request.json
+    role = data.get("role")
+
+    if role == "admin":
+        return jsonify({"success": True, "redirect": "/admin/dashboard"})
+    elif role == "coord":
+        return jsonify({"success": True, "redirect": "/coord/dashboard"})
+    elif role == "player":
+        return jsonify({"success": True, "redirect": "/player/register"})
+    else:
+        return jsonify({"success": False, "message": "Invalid role"}), 400
+
+# ---------------- RUN ----------------
 
 if __name__ == "__main__":
-    try:
-        port = int(os.environ.get("PORT", 10000))
-        app.run(host="0.0.0.0", port=port)
-    except Exception as e:
-        print("CRASH:", e)
-        traceback.print_exc()
+    port = int(os.environ.get("PORT", 10000))
+    app.run(host="0.0.0.0", port=port)
