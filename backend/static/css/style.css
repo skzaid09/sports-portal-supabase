@@ -1,0 +1,29 @@
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #e4edf5 100%);
+  min-height: 100vh;
+}
+
+.card {
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  transition: all 0.3s ease;
+}
+.card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 15px 40px rgba(0,0,0,0.12);
+}
+
+.btn {
+  border-radius: 50px !important;
+  padding: 10px 24px;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .card { margin-bottom: 1rem; }
+  .btn { width: 100%; margin-bottom: 0.5rem; }
+  .form-control, .form-select { margin-bottom: 1rem; }
+  .container { padding: 15px; }
+}

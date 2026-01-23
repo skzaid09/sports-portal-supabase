@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: sports-portal-supabase
+    env: python
+    region: oregon
+    buildCommand: "pip install -r backend/requirements.txt"
+    startCommand: "python backend/app.py"
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_KEY
+        sync: false
