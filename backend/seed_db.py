@@ -39,3 +39,21 @@ def seed_database():
             print("✅ Coordinator user created")
         except Exception as e:
             print(f"⚠️ Coordinator creation failed: {e}")
+    
+    # Check if player exists
+    player_check = supabase.table('profiles').select('*').eq('email', 'player1@example.com').execute()
+    if not player_check.data:
+        print("🌱 Creating player user...")
+        try:
+            player_auth = supabase.auth.sign_up({
+                "email": "player1@example.com",
+                "password": "player123"
+            })
+            supabase.table('profiles').insert({
+                "id": player_auth.user.id,
+                "email": "player1@example.com",
+                "role": "player"
+            }).execute()
+            print("✅ Player user created")
+        except Exception as e:
+            print(f"⚠️ Player creation failed: {e}")

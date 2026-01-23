@@ -14,7 +14,7 @@
       <form id="loginForm">
         <div class="mb-3">
           <label for="email" class="form-label text-white">Email</label>
-          <input type="email" class="form-control" id="email" required>
+          <input type="email" class="form-control" id="email" placeholder="e.g., admin1@example.com" required>
         </div>
         <div class="mb-3 position-relative">
           <label for="password" class="form-label text-white">Password</label>
@@ -45,6 +45,13 @@
       const email = document.getElementById('email').value;
       const password = document.getElementById('password').value;
       const role = document.getElementById('role').value;
+
+      // Validate email format
+      if (!email.includes('@')) {
+        document.getElementById('error').textContent = 'Please enter a valid email address';
+        document.getElementById('error').style.display = 'block';
+        return;
+      }
 
       const res = await fetch('/api/login', {
         method: 'POST',

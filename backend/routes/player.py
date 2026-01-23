@@ -1,5 +1,5 @@
 # backend/routes/player.py
-from flask import Blueprint, render_template, request, jsonify
+from flask import Blueprint, render_template, session, redirect, url_for, request, jsonify
 from config import supabase
 from datetime import datetime
 
@@ -17,6 +17,17 @@ def register_single():
 def register_team():
     return render_template('player/register_team.html')
 
+@player_bp.route('/dashboard')
+def dashboard():
+    if 'user' not in session or session['user']['role'] != 'player':
+        return redirect('/')
+    
+    email = session['user']['email']
+    players_response = supabase.table('players').select('*').eq('email', email).execute()
+    players = players_response.data
+    
+    return render_template('player/dashboard.html', players=players)
+
 @player_bp.route('/api/register-single', methods=['POST'])
 def register_single_api():
     data = request.get_json()
@@ -29,7 +40,8 @@ def register_single_api():
         })
         
         # Create profile
-        supabase.table('users').insert({
+        supabase.table('profiles').insert({
+            "id": auth_response.user.id,
             "email": f"{data['roll_no']}@sports.local",
             "role": "player"
         }).execute()
@@ -41,7 +53,8 @@ def register_single_api():
             "roll_no": data['roll_no'],
             "sport": data['sport'],
             "type": "single",
-            "user_id": auth_response.user.id
+            "email": f"{data['roll_no']}@sports.local",
+            "created_at": str(datetime.utcnow())
         }).execute()
         
         return jsonify({"success": True, "message": "Registration successful!"})
@@ -56,7 +69,8 @@ def register_team_api():
     team_response = supabase.table('teams').insert({
         "team_name": data['team_name'],
         "department": data['department'],
-        "sport": data['sport']
+        "sport": data['sport'],
+        "created_at": str(datetime.utcnow())
     }).execute()
     
     team_id = team_response.data[0]['id']
@@ -66,7 +80,8 @@ def register_team_api():
         supabase.table('team_players').insert({
             "team_id": team_id,
             "name": player['name'],
-            "roll_no": player['roll_no']
+            "roll_no": player['roll_no'],
+            "created_at": str(datetime.utcnow())
         }).execute()
     
     return jsonify({"success": True, "message": "Team registered!"})
