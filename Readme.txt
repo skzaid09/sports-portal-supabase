@@ -11,3 +11,5 @@ git add .
 git commit -m ""
 
 git push
+
+2,3,7,

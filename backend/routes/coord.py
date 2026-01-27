@@ -12,5 +12,11 @@ def dashboard():
     if "user" not in session or session["user"]["role"] != "coord":
         return redirect("/")
 
-    matches = supabase.table("matches").select("*").execute().data
+    try:
+        response = supabase.table("matches").select("*").execute()
+        matches = response.data if response.data else []
+    except Exception as e:
+        print("❌ Supabase error in coord dashboard:", e)
+        matches = []   # fail safely
+
     return render_template("coord/dashboard.html", matches=matches)

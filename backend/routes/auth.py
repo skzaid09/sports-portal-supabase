@@ -5,12 +5,18 @@ auth_bp = Blueprint("auth", __name__)
 
 @auth_bp.route("/api/login", methods=["POST"])
 def login():
-    data = request.get_json()
-    email = data.get("email")
-    password = data.get("password")
-    role = data.get("role")
-
     try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"success": False, "message": "No data received"}), 400
+
+        email = data.get("email")
+        password = data.get("password")
+        role = data.get("role")
+
+        if not email or not password or not role:
+            return jsonify({"success": False, "message": "Missing fields"}), 400
+
         auth = supabase.auth.sign_in_with_password({
             "email": email,
             "password": password
@@ -25,7 +31,9 @@ def login():
         return jsonify({"success": False, "message": "Invalid role"}), 401
 
     except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
+        print("❌ Auth Error:", e)
+        return jsonify({"success": False, "message": "Login failed"}), 500
+
 
 @auth_bp.route("/api/logout", methods=["POST"])
 def logout():
