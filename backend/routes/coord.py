@@ -1,5 +1,5 @@
 # backend/routes/coord.py
-from flask import Blueprint, render_template, session, redirect, url_for, request, jsonify
+from flask import Blueprint, render_template, session, redirect, url_for
 from config import supabase
 
 coord_bp = Blueprint('coord', __name__)
@@ -19,16 +19,3 @@ def dashboard():
     return render_template('coord/dashboard.html', 
                          events=events_response.data, 
                          matches=matches_response.data)
-
-@coord_bp.route('/api/schedule-match', methods=['POST'])
-def schedule_match():
-    data = request.get_json()
-    match = {
-        "event": data['event'],
-        "team1": data['team1'],
-        "team2": data['team2'],
-        "date": data['date'],
-        "status": "scheduled"
-    }
-    supabase.table('matches').insert(match).execute()
-    return jsonify({"success": True})
