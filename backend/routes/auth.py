@@ -1,45 +1,21 @@
-# backend/routes/auth.py
 from flask import Blueprint, request, jsonify, session
-from models.user import get_user_by_email
+from config import supabase
 
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint("auth", __name__)
 
-@auth_bp.route('/api/login', methods=['POST'])
+@auth_bp.route("/api/login", methods=["POST"])
 def login():
-    try:
-        data = request.get_json()
-        email = data.get('email')
-        password = data.get('password')
-        role = data.get('role')
+    data = request.get_json()
+    email = data["email"]
+    password = data["password"]
+    role = data["role"]
 
-        if not email or not password or not role:
-            return jsonify({"success": False, "message": "Missing fields"}), 400
+    auth = supabase.auth.sign_in_with_password({"email": email, "password": password})
 
-        # Verify credentials using Supabase Auth
-        try:
-            auth_response = supabase.auth.sign_in_with_password({
-                "email": email,
-                "password": password
-            })
-        except Exception as e:
-            return jsonify({"success": False, "message": "Invalid credentials"}), 401
+    user = supabase.table("users").select("*").eq("email", email).execute()
 
-        # Get user role
-        user = get_user_by_email(email)
-        if not user:
-            return jsonify({"success": False, "message": "User not found"}), 401
+    if user.data and user.data[0]["role"] == role:
+        session["user"] = {"email": email, "role": role}
+        return jsonify({"success": True, "redirect": f"/{role}/dashboard"})
 
-        if user['role'] != role:
-            return jsonify({"success": False, "message": "Invalid role"}), 401
-
-        session['user'] = {
-            'email': email,
-            'role': role
-        }
-        return jsonify({
-            "success": True,
-            "redirect": f"/{role}/dashboard"
-        })
-
-    except Exception as e:
-        return jsonify({"success": False, "message": f"Server error: {str(e)}"}), 500
+    return jsonify({"success": False, "message": "Invalid login"}), 401
