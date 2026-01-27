@@ -11,3 +11,8 @@ def login():
 def dashboard():
     users = supabase.table("users").select("*").execute().data
     return render_template("admin/dashboard.html", users=users)
+
+@admin_bp.route('/logout')
+def logout():
+    session.clear()
+    return redirect('/')
