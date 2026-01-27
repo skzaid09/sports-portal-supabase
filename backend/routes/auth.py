@@ -1,21 +1,33 @@
 from flask import Blueprint, request, jsonify, session
-from backend.config import supabase
+from config import supabase
 
-auth_bp = Blueprint('auth', __name__)
+auth_bp = Blueprint("auth", __name__)
 
-@auth_bp.route('/api/login', methods=['POST'])
+@auth_bp.route("/api/login", methods=["POST"])
 def login():
     data = request.get_json()
-    email = data['email']
-    password = data['password']
-    role = data['role']
+    email = data.get("email")
+    password = data.get("password")
+    role = data.get("role")
 
-    res = supabase.auth.sign_in_with_password({"email": email, "password": password})
+    try:
+        auth = supabase.auth.sign_in_with_password({
+            "email": email,
+            "password": password
+        })
 
-    if res.session:
-        user = supabase.table('users').select('*').eq('email', email).execute().data
-        if user and user[0]['role'] == role:
-            session['user'] = {"email": email, "role": role}
-            return jsonify(success=True, redirect=f"/{role}/dashboard")
+        user = supabase.table("users").select("role").eq("email", email).execute()
 
-    return jsonify(success=False, message="Invalid login"), 401
+        if user.data and user.data[0]["role"] == role:
+            session["user"] = {"email": email, "role": role}
+            return jsonify({"success": True, "redirect": f"/{role}/dashboard"})
+
+        return jsonify({"success": False, "message": "Invalid role"}), 401
+
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+@auth_bp.route("/api/logout", methods=["POST"])
+def logout():
+    session.clear()
+    return jsonify({"success": True})
