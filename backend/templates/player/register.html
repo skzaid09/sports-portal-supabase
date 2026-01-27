@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Player Register</title>
-  <link rel="stylesheet" href="/static/css/style.css">
+  <title>Select Registration</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-<h2>Select Registration</h2>
-<a href="/player/register/single">Single Player</a>
-<br>
-<a href="/player/register/team">Team Registration</a>
+<body class="bg-light">
+<div class="container py-5 text-center">
+  <h2 class="mb-4">🏅 Select Registration Type</h2>
+  <div class="d-grid gap-3 col-6 mx-auto">
+    <a href="/player/register/single" class="btn btn-success btn-lg">Single Player</a>
+    <a href="/player/register/team" class="btn btn-primary btn-lg">Team Registration</a>
+  </div>
+  <div class="mt-4">
+    <a href="/roles">← Back</a>
+  </div>
+</div>
 </body>
 </html>

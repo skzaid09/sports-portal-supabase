@@ -5,17 +5,37 @@ auth_bp = Blueprint("auth", __name__)
 
 @auth_bp.route("/api/login", methods=["POST"])
 def login():
-    data = request.get_json()
-    email = data["email"]
-    password = data["password"]
-    role = data["role"]
+    try:
+        data = request.get_json()
+        email = data.get("email")
+        password = data.get("password")
+        role = data.get("role")
 
-    auth = supabase.auth.sign_in_with_password({"email": email, "password": password})
+        auth_res = supabase.auth.sign_in_with_password({
+            "email": email,
+            "password": password
+        })
 
-    user = supabase.table("users").select("*").eq("email", email).execute()
+        if not auth_res.session:
+            return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
-    if user.data and user.data[0]["role"] == role:
+        prof = supabase.table("users").select("role").eq("email", email).execute()
+
+        if not prof.data or prof.data[0]["role"] != role:
+            return jsonify({"success": False, "message": "Role mismatch"}), 401
+
         session["user"] = {"email": email, "role": role}
-        return jsonify({"success": True, "redirect": f"/{role}/dashboard"})
 
-    return jsonify({"success": False, "message": "Invalid login"}), 401
+        return jsonify({
+            "success": True,
+            "redirect": f"/{role}/dashboard"
+        })
+
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)}), 500
+
+
+@auth_bp.route("/api/logout", methods=["POST"])
+def logout():
+    session.clear()
+    return jsonify({"success": True})
