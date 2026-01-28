@@ -1,4 +1,3 @@
-# admin.py
 from flask import Blueprint, render_template, session, redirect
 from config import supabase
 

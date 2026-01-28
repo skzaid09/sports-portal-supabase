@@ -1,4 +1,3 @@
-# coord.py
 from flask import Blueprint, render_template, session, redirect
 from config import supabase
 
@@ -13,9 +12,5 @@ def dashboard():
     if "user" not in session or session["user"]["role"] != "coord":
         return redirect("/coord/login")
 
-    try:
-        matches = supabase.table("matches").select("*").execute().data
-    except Exception:
-        matches = []
-
+    matches = supabase.table("matches").select("*").execute().data
     return render_template("coord/dashboard.html", matches=matches)

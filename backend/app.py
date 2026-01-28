@@ -1,9 +1,13 @@
 from flask import Flask, render_template, request
 import os, base64, qrcode
 from io import BytesIO
+from dotenv import load_dotenv
+
+# Load .env file
+load_dotenv()
 
 app = Flask(__name__)
-app.secret_key = "sports-secret"
+app.secret_key = os.getenv("SECRET_KEY", "sports-secret")
 
 from routes.auth import auth_bp
 from routes.admin import admin_bp

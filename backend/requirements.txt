@@ -3,3 +3,4 @@ supabase==2.7.0
 python-dotenv==1.0.1
 qrcode[pil]==7.4.2
 gunicorn
+python-dotenv
