@@ -15,7 +15,7 @@ def login():
         return jsonify({"success": False, "message": "Missing fields"}), 400
 
     try:
-        # 1️⃣ Supabase Auth Login
+        # 1️⃣ Authenticate user via Supabase Auth
         auth_res = supabase.auth.sign_in_with_password({
             "email": email,
             "password": password
@@ -24,18 +24,20 @@ def login():
         if not auth_res.user:
             return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
-        # 2️⃣ Fetch role from public.users
-        user_res = supabase.table("users").select("role").eq("email", email).execute()
+        # 2️⃣ Fetch role from users table
+        user_res = (
+            supabase
+            .table("users")
+            .select("role")
+            .eq("email", email)
+            .single()
+            .execute()
+        )
 
-        if not user_res.data:
-            return jsonify({"success": False, "message": "User role not found"}), 403
+        if not user_res.data or user_res.data["role"] != role:
+            return jsonify({"success": False, "message": "Unauthorized role"}), 403
 
-        db_role = user_res.data[0]["role"]
-
-        if db_role != role:
-            return jsonify({"success": False, "message": "Role mismatch"}), 403
-
-        # 3️⃣ Save session
+        # 3️⃣ Store session
         session["user"] = {
             "email": email,
             "role": role
@@ -47,7 +49,8 @@ def login():
         })
 
     except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
+        print("LOGIN ERROR:", e)
+        return jsonify({"success": False, "message": "Login failed"}), 500
 
 
 @auth_bp.route("/api/logout", methods=["POST"])
