@@ -15,31 +15,39 @@ def login():
         return jsonify({"success": False, "message": "Missing fields"}), 400
 
     try:
-        # Supabase Auth Login
-        res = supabase.auth.sign_in_with_password({
+        # 1️⃣ Supabase Auth Login
+        auth_res = supabase.auth.sign_in_with_password({
             "email": email,
             "password": password
         })
 
-        # Get role from users table
-        user = supabase.table("users").select("role").eq("email", email).single().execute()
+        if not auth_res.user:
+            return jsonify({"success": False, "message": "Invalid credentials"}), 401
 
-        if not user.data:
-            return jsonify({"success": False, "message": "User not found"}), 404
+        # 2️⃣ Fetch role from public.users
+        user_res = supabase.table("users").select("role").eq("email", email).execute()
 
-        if user.data["role"] != role:
-            return jsonify({"success": False, "message": "Invalid role"}), 403
+        if not user_res.data:
+            return jsonify({"success": False, "message": "User role not found"}), 403
 
+        db_role = user_res.data[0]["role"]
+
+        if db_role != role:
+            return jsonify({"success": False, "message": "Role mismatch"}), 403
+
+        # 3️⃣ Save session
         session["user"] = {
             "email": email,
             "role": role
         }
 
-        return jsonify({"success": True, "redirect": f"/{role}/dashboard"})
+        return jsonify({
+            "success": True,
+            "redirect": f"/{role}/dashboard"
+        })
 
     except Exception as e:
-        print("LOGIN ERROR:", e)
-        return jsonify({"success": False, "message": "Login failed"}), 500
+        return jsonify({"success": False, "message": str(e)}), 500
 
 
 @auth_bp.route("/api/logout", methods=["POST"])

@@ -12,4 +12,6 @@ git commit -m ""
 
 git push
 
-2,3,7,
+2,3,7,10 mai almost correct one especially "coord page"
+
+12 is correct
