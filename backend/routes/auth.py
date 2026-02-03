@@ -1,60 +1,79 @@
-# backend/routes/auth.py
-from flask import Blueprint, request, jsonify, session
-from config import supabase
+from flask import Blueprint, render_template, request, redirect, session
+from supabase import create_client
+import os
 
 auth_bp = Blueprint("auth", __name__)
 
-@auth_bp.route("/api/login", methods=["POST"])
-def login():
-    data = request.get_json()
-    email = data.get("email")
-    password = data.get("password")
-    role = data.get("role")
+supabase = create_client(
+    os.environ.get("SUPABASE_URL"),
+    os.environ.get("SUPABASE_ANON_KEY")
+)
 
-    if not email or not password or not role:
-        return jsonify({"success": False, "message": "Missing fields"}), 400
+# ---------- ADMIN LOGIN ----------
+@auth_bp.route("/admin/login", methods=["GET", "POST"])
+def admin_login():
+    error = None
 
-    try:
-        # 1️⃣ Authenticate with Supabase Auth
-        auth = supabase.auth.sign_in_with_password({
-            "email": email,
-            "password": password
-        })
+    if request.method == "POST":
+        email = request.form["email"]
+        password = request.form["password"]
 
-        user = auth.user
-        if not user:
-            return jsonify({"success": False, "message": "Invalid credentials"}), 401
+        try:
+            auth = supabase.auth.sign_in_with_password({
+                "email": email,
+                "password": password
+            })
 
-        # 2️⃣ Fetch role from profiles table
-        profile = supabase.table("profiles") \
-            .select("role") \
-            .eq("id", user.id) \
-            .single() \
-            .execute()
+            user = auth.user
+            profile = supabase.table("profiles") \
+                .select("role") \
+                .eq("id", user.id) \
+                .single() \
+                .execute()
 
-        if not profile.data:
-            return jsonify({"success": False, "message": "Profile not found"}), 403
+            if profile.data["role"] != "admin":
+                error = "Not an admin account"
+            else:
+                session["user_id"] = user.id
+                session["role"] = "admin"
+                return redirect("/admin/dashboard")
 
-        if profile.data["role"] != role:
-            return jsonify({"success": False, "message": "Role mismatch"}), 403
+        except Exception as e:
+            error = str(e)
 
-        # 3️⃣ Save session
-        session["user"] = {
-            "id": user.id,
-            "email": email,
-            "role": role
-        }
-
-        return jsonify({
-            "success": True,
-            "redirect": f"/{role}/dashboard"
-        })
-
-    except Exception as e:
-        return jsonify({"success": False, "message": str(e)}), 500
+    return render_template("admin/login.html", error=error)
 
 
-@auth_bp.route("/api/logout", methods=["POST"])
-def logout():
-    session.clear()
-    return jsonify({"success": True})
+# ---------- COORD LOGIN ----------
+@auth_bp.route("/coord/login", methods=["GET", "POST"])
+def coord_login():
+    error = None
+
+    if request.method == "POST":
+        email = request.form["email"]
+        password = request.form["password"]
+
+        try:
+            auth = supabase.auth.sign_in_with_password({
+                "email": email,
+                "password": password
+            })
+
+            user = auth.user
+            profile = supabase.table("profiles") \
+                .select("role") \
+                .eq("id", user.id) \
+                .single() \
+                .execute()
+
+            if profile.data["role"] != "coord":
+                error = "Not a coordinator account"
+            else:
+                session["user_id"] = user.id
+                session["role"] = "coord"
+                return redirect("/coord/dashboard")
+
+        except Exception as e:
+            error = str(e)
+
+    return render_template("coord/login.html", error=error)
