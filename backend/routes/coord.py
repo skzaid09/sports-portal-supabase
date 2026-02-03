@@ -11,6 +11,4 @@ def login():
 def dashboard():
     if "user" not in session or session["user"]["role"] != "coord":
         return redirect("/coord/login")
-
-    matches = supabase.table("matches").select("*").execute().data
-    return render_template("coord/dashboard.html", matches=matches)
+    return render_template("coord/dashboard.html")

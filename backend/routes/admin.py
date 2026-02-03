@@ -11,6 +11,4 @@ def login():
 def dashboard():
     if "user" not in session or session["user"]["role"] != "admin":
         return redirect("/admin/login")
-
-    users = supabase.table("users").select("*").execute().data
-    return render_template("admin/dashboard.html", users=users)
+    return render_template("admin/dashboard.html")
