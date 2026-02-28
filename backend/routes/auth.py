@@ -1,79 +1,51 @@
-from flask import Blueprint, render_template, request, redirect, session
-from supabase import create_client
-import os
+from flask import Blueprint, request, session, redirect, url_for, render_template
+from config import supabase
 
 auth_bp = Blueprint("auth", __name__)
 
-supabase = create_client(
-    os.environ.get("SUPABASE_URL"),
-    os.environ.get("SUPABASE_ANON_KEY")
-)
-
-# ---------- ADMIN LOGIN ----------
-@auth_bp.route("/admin/login", methods=["GET", "POST"])
-def admin_login():
-    error = None
-
+@auth_bp.route("/login", methods=["GET", "POST"])
+def login():
     if request.method == "POST":
         email = request.form["email"]
         password = request.form["password"]
 
         try:
-            auth = supabase.auth.sign_in_with_password({
+            # Supabase login
+            result = supabase.auth.sign_in_with_password({
                 "email": email,
                 "password": password
             })
 
-            user = auth.user
+            user_id = result.user.id
+
+            # Get role from profiles table
             profile = supabase.table("profiles") \
-                .select("role") \
-                .eq("id", user.id) \
-                .single() \
+                .select("*") \
+                .eq("id", user_id) \
                 .execute()
 
-            if profile.data["role"] != "admin":
-                error = "Not an admin account"
-            else:
-                session["user_id"] = user.id
-                session["role"] = "admin"
+            if not profile.data:
+                return "User role not found!"
+
+            role = profile.data[0]["role"]
+
+            session["user_id"] = user_id
+            session["role"] = role
+
+            if role == "admin":
                 return redirect("/admin/dashboard")
-
-        except Exception as e:
-            error = str(e)
-
-    return render_template("admin/login.html", error=error)
-
-
-# ---------- COORD LOGIN ----------
-@auth_bp.route("/coord/login", methods=["GET", "POST"])
-def coord_login():
-    error = None
-
-    if request.method == "POST":
-        email = request.form["email"]
-        password = request.form["password"]
-
-        try:
-            auth = supabase.auth.sign_in_with_password({
-                "email": email,
-                "password": password
-            })
-
-            user = auth.user
-            profile = supabase.table("profiles") \
-                .select("role") \
-                .eq("id", user.id) \
-                .single() \
-                .execute()
-
-            if profile.data["role"] != "coord":
-                error = "Not a coordinator account"
-            else:
-                session["user_id"] = user.id
-                session["role"] = "coord"
+            elif role == "coord":
                 return redirect("/coord/dashboard")
+            else:
+                return "Invalid role"
 
         except Exception as e:
-            error = str(e)
+            return f"Login error: {str(e)}"
 
-    return render_template("coord/login.html", error=error)
+    return render_template("login.html")
+
+
+@auth_bp.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("auth.login"))
