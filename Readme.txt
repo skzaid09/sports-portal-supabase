@@ -18,4 +18,6 @@ c
 
 14 is updated with player 1 and team dashboard correct 
 
-17 failed 
+17 and 18 failed 
+
+19

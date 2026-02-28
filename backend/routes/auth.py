@@ -32,12 +32,16 @@ def login():
             session["user_id"] = user_id
             session["role"] = role
 
-            if role == "admin":
-                return redirect("/admin/dashboard")
-            elif role == "coord":
-                return redirect("/coord/dashboard")
-            else:
-                return "Invalid role"
+            role = role.lower().strip()
+
+if role == "admin":
+    return redirect("/admin/dashboard")
+
+elif role in ["coord", "coordinator"]:
+    return redirect("/coord/dashboard")
+
+else:
+    return "Role not configured"
 
         except Exception as e:
             return f"Login error: {str(e)}"
