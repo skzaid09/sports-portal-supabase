@@ -34,14 +34,13 @@ def login():
 
             role = role.lower().strip()
 
-if role == "admin":
-    return redirect("/admin/dashboard")
+            if role == "admin":
+                return redirect("/admin/dashboard")
+            elif role in ["coord", "coordinator"]:
+                return redirect("/coord/dashboard")
 
-elif role in ["coord", "coordinator"]:
-    return redirect("/coord/dashboard")
-
-else:
-    return "Role not configured"
+            else:
+                return "Role not configured"
 
         except Exception as e:
             return f"Login error: {str(e)}"
