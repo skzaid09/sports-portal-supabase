@@ -124,7 +124,6 @@ def dashboard():
     if "user" not in session or session["user"]["role"] != "admin":
         return redirect("/admin/login")
 
-```
 try:
     players = requests.get(
         f"{SUPABASE_URL}/rest/v1/players?select=*",
@@ -144,4 +143,3 @@ return render_template(
     players=players,
     teams=teams
 )
-```

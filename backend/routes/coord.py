@@ -80,14 +80,12 @@ def dashboard():
     if "user" not in session or session["user"]["role"] != "coord":
         return redirect("/coord/login")
 
-```
 matches = requests.get(
     f"{SUPABASE_URL}/rest/v1/matches?select=*",
     headers=HEADERS
 ).json()
 
     return render_template("coord/dashboard.html", matches=matches)
-```
 
 # SAVE MATCH
 
@@ -95,7 +93,6 @@ matches = requests.get(
 def schedule():
 data = request.json
 
-```
 res = requests.post(
     f"{SUPABASE_URL}/rest/v1/matches",
     headers=HEADERS,
@@ -109,4 +106,3 @@ res = requests.post(
 )
 
 return jsonify({"success": True})
-```
