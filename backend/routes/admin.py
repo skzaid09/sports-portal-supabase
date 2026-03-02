@@ -33,7 +33,6 @@
 
 # #polish
 from flask import Blueprint, render_template, session, redirect
-from config import supabase
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
