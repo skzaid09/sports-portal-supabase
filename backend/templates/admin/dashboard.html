@@ -141,3 +141,73 @@
 
 </div>
 
+
+{% extends "base.html" %}
+
+{% block content %}
+
+<h2 class="mb-4">👑 Admin Dashboard</h2>
+
+<div class="row mb-4">
+  <div class="col-md-6">
+    <div class="card p-3 shadow">
+      <h5>Total Players</h5>
+      <h2>{{ players|length }}</h2>
+    </div>
+  </div>
+
+  <div class="col-md-6">
+    <div class="card p-3 shadow">
+      <h5>Total Teams</h5>
+      <h2>{{ teams|length }}</h2>
+    </div>
+  </div>
+</div>
+
+<!-- PLAYERS -->
+
+<div class="card p-3 shadow mb-4">
+  <h4>🎮 Registered Players</h4>
+<table class="table table-striped">
+<tr>
+    <th>Name</th>
+    <th>Department</th>
+    <th>Roll</th>
+    <th>Sport</th>
+</tr>
+
+{% for p in players %}
+
+<tr>
+    <td>{{ p.name }}</td>
+    <td>{{ p.department }}</td>
+    <td>{{ p.roll_no }}</td>
+    <td>{{ p.sport }}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+<!-- TEAMS -->
+
+<div class="card p-3 shadow">
+  <h4>🏆 Teams</h4>
+<table class="table table-striped">
+<tr>
+    <th>Team</th>
+    <th>Department</th>
+    <th>Sport</th>
+</tr>
+
+{% for t in teams %}
+
+<tr>
+    <td>{{ t.team_name }}</td>
+    <td>{{ t.department }}</td>
+    <td>{{ t.sport }}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+
+{% endblock %}

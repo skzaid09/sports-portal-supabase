@@ -51,48 +51,62 @@
 
 #     return render_template("coord/dashboard.html")
 
-from flask import Blueprint, render_template, request, jsonify
+    
+from flask import Blueprint, render_template, session, redirect, request, jsonify
+import requests
 import os
 
-coord_bp = Blueprint("coord", __name__, url_prefix="/coord")
+coord_bp = Blueprint("coord", **name**, url_prefix="/coord")
 
-# Supabase connection
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY")
 
-supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
+HEADERS = {
+"apikey": SUPABASE_KEY,
+"Authorization": f"Bearer {SUPABASE_KEY}",
+"Content-Type": "application/json"
+}
 
+# LOGIN
 
-# =========================
-# Coordinator dashboard
-# =========================
+@coord_bp.route("/login")
+def login():
+return render_template("coord/login.html")
+
+# DASHBOARD
+
 @coord_bp.route("/dashboard")
 def dashboard():
-    # Load matches from Supabase
-    res = supabase.table("matches").select("*").execute()
-    matches = res.data if res.data else []
+if "user" not in session or session["user"]["role"] != "coord":
+return redirect("/coord/login")
 
-    return render_template("coord/dashboard.html", matches=matches)
+```
+matches = requests.get(
+    f"{SUPABASE_URL}/rest/v1/matches?select=*",
+    headers=HEADERS
+).json()
 
+return render_template("coord/dashboard.html", matches=matches)
+```
 
-# =========================
-# Save match to Supabase
-# =========================
-@coord_bp.route("/api/schedule-match", methods=["POST"])
-def schedule_match():
-    data = request.get_json()
+# SAVE MATCH
 
-    try:
-        supabase.table("matches").insert({
-            "event": data["event"],
-            "team1": data["team1"],
-            "team2": data["team2"],
-            "date": data["date"],
-            "status": "Scheduled"
-        }).execute()
+@coord_bp.route("/api/schedule", methods=["POST"])
+def schedule():
+data = request.json
 
-        return jsonify({"success": True})
+```
+res = requests.post(
+    f"{SUPABASE_URL}/rest/v1/matches",
+    headers=HEADERS,
+    json={
+        "event": data["event"],
+        "team1": data["team1"],
+        "team2": data["team2"],
+        "date": data["date"],
+        "status": "Scheduled"
+    }
+)
 
-    except Exception as e:
-        print("MATCH ERROR:", e)
-        return jsonify({"success": False})
+return jsonify({"success": True})
+```
