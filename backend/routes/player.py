@@ -215,58 +215,44 @@ def register_team():
 # SINGLE PLAYER
 # ======================
 
+import requests
+from flask import jsonify, request
+
 @player_bp.route("/api/register-single", methods=["POST"])
-def register_single_api():
+def api_single():
     try:
         data = request.get_json()
-        print("DATA:", data)
+        print("✅ Received data:", data)
 
-        profile_payload = {
-            "email": f"{data['roll_no']}@sports.com",
-            "role": "player"
-        }
-
-        profile_res = requests.post(
-            f"{SUPABASE_URL}/rest/v1/profiles",
-            json=profile_payload,
-            headers={**HEADERS, "Prefer": "return=representation"}
-        )
-
-        print("PROFILE STATUS:", profile_res.status_code)
-        print("PROFILE RESPONSE:", profile_res.text)
-
-        if profile_res.status_code not in [200, 201]:
-            return jsonify({"success": False})
-
-        user = profile_res.json()[0]
-
-        player_payload = {
+        payload = {
             "name": data["name"],
             "department": data["department"],
             "roll_no": data["roll_no"],
             "sport": data["sport"],
-            "type": "single",
-            "user_id": user["id"]
+            "type": "single"
         }
 
-        player_res = requests.post(
+        print("📤 Sending to Supabase:", payload)
+
+        res = requests.post(
             f"{SUPABASE_URL}/rest/v1/players",
-            json=player_payload,
+            json=payload,
             headers=HEADERS
         )
 
-        print("PLAYER STATUS:", player_res.status_code)
-        print("PLAYER RESPONSE:", player_res.text)
+        print("📥 Supabase status:", res.status_code)
+        print("📥 Supabase response:", res.text)
 
-        if player_res.status_code not in [200, 201]:
-            return jsonify({"success": False})
-
-        return jsonify({"success": True})
+        # IMPORTANT
+        if res.status_code in [200, 201]:
+            return jsonify({"success": True})
+        else:
+            return jsonify({"success": False, "error": res.text})
 
     except Exception as e:
-        print("ERROR:", e)
-        return jsonify({"success": False})
-        
+        print("❌ ERROR:", e)
+        return jsonify({"success": False, "error": str(e)})
+
 # ======================
 # TEAM PLAYER
 # ======================
