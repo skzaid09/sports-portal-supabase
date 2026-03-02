@@ -71,7 +71,6 @@
 
 # #polish
 from flask import Blueprint, render_template, request, redirect, session, jsonify
-from config import supabase
 
 player_bp = Blueprint("player", __name__, url_prefix="/player")
 

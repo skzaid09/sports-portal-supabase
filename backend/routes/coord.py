@@ -33,7 +33,6 @@
 
 #polish
 from flask import Blueprint, render_template, request, redirect, session, jsonify
-from config import supabase
 
 coord_bp = Blueprint("coord", __name__, url_prefix="/coord")
 
