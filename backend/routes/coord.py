@@ -77,8 +77,8 @@ return render_template("coord/login.html")
 
 @coord_bp.route("/dashboard")
 def dashboard():
-if "user" not in session or session["user"]["role"] != "coord":
-return redirect("/coord/login")
+    if "user" not in session or session["user"]["role"] != "coord":
+        return redirect("/coord/login")
 
 ```
 matches = requests.get(
@@ -86,7 +86,7 @@ matches = requests.get(
     headers=HEADERS
 ).json()
 
-return render_template("coord/dashboard.html", matches=matches)
+    return render_template("coord/dashboard.html", matches=matches)
 ```
 
 # SAVE MATCH

@@ -115,14 +115,14 @@ HEADERS = {
 
 @admin_bp.route("/login")
 def login():
-return render_template("admin/login.html")
+    return render_template("admin/login.html")
 
 # DASHBOARD
 
 @admin_bp.route("/dashboard")
 def dashboard():
-if "user" not in session or session["user"]["role"] != "admin":
-return redirect("/admin/login")
+    if "user" not in session or session["user"]["role"] != "admin":
+        return redirect("/admin/login")
 
 ```
 try:
