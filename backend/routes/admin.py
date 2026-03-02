@@ -101,7 +101,7 @@ from flask import Blueprint, render_template, session, redirect
 import requests
 import os
 
-admin_bp = Blueprint("admin", **name**, url_prefix="/admin")
+admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY")
@@ -135,7 +135,6 @@ try:
         f"{SUPABASE_URL}/rest/v1/teams?select=*",
         headers=HEADERS
     ).json()
-
 except:
     players = []
     teams = []

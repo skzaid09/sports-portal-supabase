@@ -56,7 +56,7 @@ from flask import Blueprint, render_template, session, redirect, request, jsonif
 import requests
 import os
 
-coord_bp = Blueprint("coord", **name**, url_prefix="/coord")
+coord_bp = Blueprint("coord", __name__, url_prefix="/coord")
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY")
