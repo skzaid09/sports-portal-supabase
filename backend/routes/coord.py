@@ -1,5 +1,11 @@
 from flask import Blueprint, render_template, session, redirect
-from config import supabase
+from flask import Blueprint, render_template
+
+coord_bp = Blueprint("coord", __name__)
+
+@coord_bp.route("/dashboard")
+def dashboard():
+    return render_template("coord/dashboard.html")
 
 coord_bp = Blueprint("coord", __name__, url_prefix="/coord")
 

@@ -1,5 +1,11 @@
 from flask import Blueprint, render_template, request, jsonify
-from config import supabase
+from flask import Blueprint, render_template
+
+player_bp = Blueprint("player", __name__)
+
+@player_bp.route("/options")
+def options():
+    return render_template("player/options.html")
 
 player_bp = Blueprint("player", __name__)
 

@@ -1,5 +1,11 @@
 from flask import Blueprint, render_template, session, redirect
-from config import supabase
+ffrom flask import Blueprint, render_template
+
+admin_bp = Blueprint("admin", __name__)
+
+@admin_bp.route("/dashboard")
+def dashboard():
+    return render_template("admin/dashboard.html")
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
