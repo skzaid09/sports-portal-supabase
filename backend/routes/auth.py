@@ -1,210 +1,344 @@
-# # # # # # from flask import Blueprint, request, session, redirect, url_for, render_template
+# # # # # # # # from flask import Blueprint, request, session, redirect, url_for, render_template
+# # # # # # # # from config import supabase
+
+# # # # # # # # auth_bp = Blueprint("auth", __name__)
+
+# # # # # # # # @auth_bp.route("/login", methods=["GET", "POST"])
+# # # # # # # # def login():
+# # # # # # # #     if request.method == "POST":
+# # # # # # # #         email = request.form["email"]
+# # # # # # # #         password = request.form["password"]
+
+# # # # # # # #         try:
+# # # # # # # #             # Supabase login
+# # # # # # # #             result = supabase.auth.sign_in_with_password({
+# # # # # # # #                 "email": email,
+# # # # # # # #                 "password": password
+# # # # # # # #             })
+
+# # # # # # # #             user_id = result.user.id
+
+# # # # # # # #             # Get role from profiles table
+# # # # # # # #             profile = supabase.table("profiles") \
+# # # # # # # #                 .select("*") \
+# # # # # # # #                 .eq("id", user_id) \
+# # # # # # # #                 .execute()
+
+# # # # # # # #             if not profile.data:
+# # # # # # # #                 return "User role not found!"
+
+# # # # # # # #             role = profile.data[0]["role"]
+
+# # # # # # # #             session["user_id"] = user_id
+# # # # # # # #             session["role"] = role
+
+# # # # # # # #             role = role.lower().strip()
+
+# # # # # # # #             if role == "admin":
+# # # # # # # #                 return redirect("/admin/dashboard")
+# # # # # # # #             elif role in ["coord", "coordinator"]:
+# # # # # # # #                 return redirect("/coord/dashboard")
+
+# # # # # # # #             else:
+# # # # # # # #                 return "Role not configured"
+
+# # # # # # # #         except Exception as e:
+# # # # # # # #             return f"Login error: {str(e)}"
+
+# # # # # # # #     return render_template("login.html")
+
+
+# # # # # # # # @auth_bp.route("/logout")
+# # # # # # # # def logout():
+# # # # # # # #     session.clear()
+# # # # # # # #     return redirect(url_for("auth.login"))
+
+# # # # # # # 222
+# # # # # # # from flask import Blueprint, request, jsonify, render_template, redirect, session
+# # # # # # # from config import supabase
+
+# # # # # # # # ✅ CREATE BLUEPRINT FIRST (THIS WAS MISSING)
+# # # # # # # auth_bp = Blueprint("auth", __name__)
+
+
+# # # # # # # # =============================
+# # # # # # # # LOGIN PAGE
+# # # # # # # # =============================
+# # # # # # # @auth_bp.route("/login")
+# # # # # # # def login_page():
+# # # # # # #     return render_template("login.html")
+
+
+# # # # # # # # =============================
+# # # # # # # # API LOGIN (FOR AJAX)
+# # # # # # # # =============================
+# # # # # # # @auth_bp.route("/api/login", methods=["POST"])
+# # # # # # # def api_login():
+# # # # # # #     data = request.get_json()
+
+# # # # # # #     email = data.get("email")
+# # # # # # #     password = data.get("password")
+
+# # # # # # #     try:
+# # # # # # #         # Supabase login
+# # # # # # #         result = supabase.auth.sign_in_with_password({
+# # # # # # #             "email": email,
+# # # # # # #             "password": password
+# # # # # # #         })
+
+# # # # # # #         user_id = result.user.id
+
+# # # # # # #         # Fetch role
+# # # # # # #         profile = supabase.table("profiles") \
+# # # # # # #             .select("*") \
+# # # # # # #             .eq("id", user_id) \
+# # # # # # #             .execute()
+
+# # # # # # #         if not profile.data:
+# # # # # # #             return jsonify({
+# # # # # # #                 "success": False,
+# # # # # # #                 "message": "Role not found"
+# # # # # # #             })
+
+# # # # # # #         role = profile.data[0]["role"]
+
+# # # # # # #         # Save session (good for security + viva)
+# # # # # # #         session["user_id"] = user_id
+# # # # # # #         session["role"] = role
+
+# # # # # # #         # Redirect based on role
+# # # # # # #         if role == "admin":
+# # # # # # #             redirect_url = "/admin/dashboard"
+# # # # # # #         elif role in ["coord", "coordinator"]:
+# # # # # # #             redirect_url = "/coord/dashboard"
+# # # # # # #         else:
+# # # # # # #             return jsonify({
+# # # # # # #                 "success": False,
+# # # # # # #                 "message": "Invalid role"
+# # # # # # #             })
+
+# # # # # # #         return jsonify({
+# # # # # # #             "success": True,
+# # # # # # #             "redirect": redirect_url
+# # # # # # #         })
+
+# # # # # # #     except Exception as e:
+# # # # # # #         return jsonify({
+# # # # # # #             "success": False,
+# # # # # # #             "message": str(e)
+# # # # # # #         })
+
+
+# # # # # # # # =============================
+# # # # # # # # LOGOUT
+# # # # # # # # =============================
+# # # # # # # @auth_bp.route("/logout")
+# # # # # # # def logout():
+# # # # # # #     session.clear()
+# # # # # # #     return redirect("/login")
+# # # # # # #333
+
+# # # # # # from flask import Blueprint, request, jsonify, render_template, redirect, session
 # # # # # # from config import supabase
 
+# # # # # # # ✅ CREATE BLUEPRINT FIRST (THIS WAS MISSING)
 # # # # # # auth_bp = Blueprint("auth", __name__)
 
-# # # # # # @auth_bp.route("/login", methods=["GET", "POST"])
-# # # # # # def login():
-# # # # # #     if request.method == "POST":
-# # # # # #         email = request.form["email"]
-# # # # # #         password = request.form["password"]
 
-# # # # # #         try:
-# # # # # #             # Supabase login
-# # # # # #             result = supabase.auth.sign_in_with_password({
-# # # # # #                 "email": email,
-# # # # # #                 "password": password
-# # # # # #             })
-
-# # # # # #             user_id = result.user.id
-
-# # # # # #             # Get role from profiles table
-# # # # # #             profile = supabase.table("profiles") \
-# # # # # #                 .select("*") \
-# # # # # #                 .eq("id", user_id) \
-# # # # # #                 .execute()
-
-# # # # # #             if not profile.data:
-# # # # # #                 return "User role not found!"
-
-# # # # # #             role = profile.data[0]["role"]
-
-# # # # # #             session["user_id"] = user_id
-# # # # # #             session["role"] = role
-
-# # # # # #             role = role.lower().strip()
-
-# # # # # #             if role == "admin":
-# # # # # #                 return redirect("/admin/dashboard")
-# # # # # #             elif role in ["coord", "coordinator"]:
-# # # # # #                 return redirect("/coord/dashboard")
-
-# # # # # #             else:
-# # # # # #                 return "Role not configured"
-
-# # # # # #         except Exception as e:
-# # # # # #             return f"Login error: {str(e)}"
-
+# # # # # # # =============================
+# # # # # # # LOGIN PAGE
+# # # # # # # =============================
+# # # # # # @auth_bp.route("/login")
+# # # # # # def login_page():
 # # # # # #     return render_template("login.html")
 
 
+# # # # # # # =============================
+# # # # # # # API LOGIN (FOR AJAX)
+# # # # # # # =============================
+# # # # # # @auth_bp.route("/api/login", methods=["POST"])
+# # # # # # def api_login():
+# # # # # #     data = request.get_json()
+
+# # # # # #     email = data.get("email")
+# # # # # #     password = data.get("password")
+
+# # # # # #     try:
+# # # # # #         # Supabase login
+# # # # # #         result = supabase.auth.sign_in_with_password({
+# # # # # #             "email": email,
+# # # # # #             "password": password
+# # # # # #         })
+
+# # # # # #         user_id = result.user.id
+
+# # # # # #         # Fetch role
+# # # # # #         profile = supabase.table("profiles") \
+# # # # # #             .select("*") \
+# # # # # #             .eq("id", user_id) \
+# # # # # #             .execute()
+
+# # # # # #         if not profile.data:
+# # # # # #             return jsonify({
+# # # # # #                 "success": False,
+# # # # # #                 "message": "Role not found"
+# # # # # #             })
+
+# # # # # #         role = profile.data[0]["role"]
+
+# # # # # #         # Save session (good for security + viva)
+# # # # # #         session["user_id"] = user_id
+# # # # # #         session["role"] = role
+
+# # # # # #         # Redirect based on role
+# # # # # #         if role == "admin":
+# # # # # #             redirect_url = "/admin/dashboard"
+# # # # # #         elif role in ["coord", "coordinator"]:
+# # # # # #             redirect_url = "/coord/dashboard"
+# # # # # #         else:
+# # # # # #             return jsonify({
+# # # # # #                 "success": False,
+# # # # # #                 "message": "Invalid role"
+# # # # # #             })
+
+# # # # # #         return jsonify({
+# # # # # #             "success": True,
+# # # # # #             "redirect": redirect_url
+# # # # # #         })
+
+# # # # # #     except Exception as e:
+# # # # # #         return jsonify({
+# # # # # #             "success": False,
+# # # # # #             "message": str(e)
+# # # # # #         })
+
+
+# # # # # # # =============================
+# # # # # # # LOGOUT
+# # # # # # # =============================
 # # # # # # @auth_bp.route("/logout")
 # # # # # # def logout():
 # # # # # #     session.clear()
-# # # # # #     return redirect(url_for("auth.login"))
+# # # # # #     return redirect("/login")
 
-# # # # # 222
+# # # # # # final fixed
+
 # # # # # from flask import Blueprint, request, jsonify, render_template, redirect, session
 # # # # # from config import supabase
 
-# # # # # # ✅ CREATE BLUEPRINT FIRST (THIS WAS MISSING)
 # # # # # auth_bp = Blueprint("auth", __name__)
 
 
-# # # # # # =============================
-# # # # # # LOGIN PAGE
-# # # # # # =============================
-# # # # # @auth_bp.route("/login")
-# # # # # def login_page():
-# # # # #     return render_template("login.html")
+# # # # # # Login pages
+# # # # # @auth_bp.route("/admin/login")
+# # # # # def admin_login():
+# # # # #     return render_template("admin_login.html")
 
 
-# # # # # # =============================
-# # # # # # API LOGIN (FOR AJAX)
-# # # # # # =============================
+# # # # # @auth_bp.route("/coord/login")
+# # # # # def coord_login():
+# # # # #     return render_template("coord_login.html")
+
+
+# # # # # # =====================
+# # # # # # SIMPLE LOGIN API
+# # # # # # =====================
 # # # # # @auth_bp.route("/api/login", methods=["POST"])
 # # # # # def api_login():
 # # # # #     data = request.get_json()
 
 # # # # #     email = data.get("email")
-# # # # #     password = data.get("password")
+# # # # #     password = data.get("password")  # only for demo
 
-# # # # #     try:
-# # # # #         # Supabase login
-# # # # #         result = supabase.auth.sign_in_with_password({
-# # # # #             "email": email,
-# # # # #             "password": password
-# # # # #         })
+# # # # #     # Fetch user from profiles table
+# # # # #     user = supabase.table("profiles") \
+# # # # #         .select("*") \
+# # # # #         .eq("email", email) \
+# # # # #         .execute()
 
-# # # # #         user_id = result.user.id
+# # # # #     if not user.data:
+# # # # #         return jsonify({"success": False, "message": "User not found"})
 
-# # # # #         # Fetch role
-# # # # #         profile = supabase.table("profiles") \
-# # # # #             .select("*") \
-# # # # #             .eq("id", user_id) \
-# # # # #             .execute()
+# # # # #     role = user.data[0]["role"]
 
-# # # # #         if not profile.data:
-# # # # #             return jsonify({
-# # # # #                 "success": False,
-# # # # #                 "message": "Role not found"
-# # # # #             })
+# # # # #     # Demo password check (for submission)
+# # # # #     if password != "12345678":
+# # # # #         return jsonify({"success": False, "message": "Wrong password"})
 
-# # # # #         role = profile.data[0]["role"]
+# # # # #     session["role"] = role
 
-# # # # #         # Save session (good for security + viva)
-# # # # #         session["user_id"] = user_id
-# # # # #         session["role"] = role
+# # # # #     if role == "admin":
+# # # # #         redirect_url = "/admin/dashboard"
+# # # # #     else:
+# # # # #         redirect_url = "/coord/dashboard"
 
-# # # # #         # Redirect based on role
-# # # # #         if role == "admin":
-# # # # #             redirect_url = "/admin/dashboard"
-# # # # #         elif role in ["coord", "coordinator"]:
-# # # # #             redirect_url = "/coord/dashboard"
-# # # # #         else:
-# # # # #             return jsonify({
-# # # # #                 "success": False,
-# # # # #                 "message": "Invalid role"
-# # # # #             })
-
-# # # # #         return jsonify({
-# # # # #             "success": True,
-# # # # #             "redirect": redirect_url
-# # # # #         })
-
-# # # # #     except Exception as e:
-# # # # #         return jsonify({
-# # # # #             "success": False,
-# # # # #             "message": str(e)
-# # # # #         })
+# # # # #     return jsonify({"success": True, "redirect": redirect_url})
 
 
-# # # # # # =============================
-# # # # # # LOGOUT
-# # # # # # =============================
 # # # # # @auth_bp.route("/logout")
 # # # # # def logout():
 # # # # #     session.clear()
-# # # # #     return redirect("/login")
-# # # # #333
+# # # # #     return redirect("/roles")
 
-# # # # from flask import Blueprint, request, jsonify, render_template, redirect, session
-# # # # from config import supabase
+# # # # from flask import Blueprint, request, jsonify, render_template, session, redirect
 
-# # # # # ✅ CREATE BLUEPRINT FIRST (THIS WAS MISSING)
 # # # # auth_bp = Blueprint("auth", __name__)
 
 
-# # # # # =============================
-# # # # # LOGIN PAGE
-# # # # # =============================
-# # # # @auth_bp.route("/login")
-# # # # def login_page():
-# # # #     return render_template("login.html")
+# # # # # ==============================
+# # # # # LOGIN PAGES
+# # # # # ==============================
+
+# # # # @auth_bp.route("/admin/login")
+# # # # def admin_login():
+# # # #     return render_template("admin_login.html")
 
 
-# # # # # =============================
-# # # # # API LOGIN (FOR AJAX)
-# # # # # =============================
+# # # # @auth_bp.route("/coord/login")
+# # # # def coord_login():
+# # # #     return render_template("coord_login.html")
+
+
+# # # # # ==============================
+# # # # # SIMPLE LOGIN API
+# # # # # ==============================
+
 # # # # @auth_bp.route("/api/login", methods=["POST"])
 # # # # def api_login():
-# # # #     data = request.get_json()
-
-# # # #     email = data.get("email")
-# # # #     password = data.get("password")
-
 # # # #     try:
-# # # #         # Supabase login
-# # # #         result = supabase.auth.sign_in_with_password({
-# # # #             "email": email,
-# # # #             "password": password
-# # # #         })
+# # # #         data = request.get_json()
 
-# # # #         user_id = result.user.id
+# # # #         email = data.get("email")
+# # # #         password = data.get("password")
 
-# # # #         # Fetch role
-# # # #         profile = supabase.table("profiles") \
-# # # #             .select("*") \
-# # # #             .eq("id", user_id) \
-# # # #             .execute()
-
-# # # #         if not profile.data:
+# # # #         # DEMO PASSWORD
+# # # #         if password != "12345678":
 # # # #             return jsonify({
 # # # #                 "success": False,
-# # # #                 "message": "Role not found"
+# # # #                 "message": "Invalid password"
 # # # #             })
 
-# # # #         role = profile.data[0]["role"]
+# # # #         # ADMIN LOGIN
+# # # #         if email == "admin1@example.com":
+# # # #             session["role"] = "admin"
+# # # #             return jsonify({
+# # # #                 "success": True,
+# # # #                 "redirect": "/admin/dashboard"
+# # # #             })
 
-# # # #         # Save session (good for security + viva)
-# # # #         session["user_id"] = user_id
-# # # #         session["role"] = role
+# # # #         # COORDINATOR LOGIN
+# # # #         elif email == "coord1@example.com":
+# # # #             session["role"] = "coord"
+# # # #             return jsonify({
+# # # #                 "success": True,
+# # # #                 "redirect": "/coord/dashboard"
+# # # #             })
 
-# # # #         # Redirect based on role
-# # # #         if role == "admin":
-# # # #             redirect_url = "/admin/dashboard"
-# # # #         elif role in ["coord", "coordinator"]:
-# # # #             redirect_url = "/coord/dashboard"
 # # # #         else:
 # # # #             return jsonify({
 # # # #                 "success": False,
-# # # #                 "message": "Invalid role"
+# # # #                 "message": "User not found"
 # # # #             })
-
-# # # #         return jsonify({
-# # # #             "success": True,
-# # # #             "redirect": redirect_url
-# # # #         })
 
 # # # #     except Exception as e:
 # # # #         return jsonify({
@@ -213,214 +347,207 @@
 # # # #         })
 
 
-# # # # # =============================
+# # # # # ==============================
 # # # # # LOGOUT
-# # # # # =============================
+# # # # # ==============================
+
 # # # # @auth_bp.route("/logout")
 # # # # def logout():
 # # # #     session.clear()
-# # # #     return redirect("/login")
+# # # #     return redirect("/roles")
 
-# # # # final fixed
-
-# # # from flask import Blueprint, request, jsonify, render_template, redirect, session
-# # # from config import supabase
+# # # from flask import Blueprint, request, jsonify
+# # # from config import SUPABASE_URL, HEADERS
+# # # import requests
 
 # # # auth_bp = Blueprint("auth", __name__)
 
-
-# # # # Login pages
-# # # @auth_bp.route("/admin/login")
-# # # def admin_login():
-# # #     return render_template("admin_login.html")
-
-
-# # # @auth_bp.route("/coord/login")
-# # # def coord_login():
-# # #     return render_template("coord_login.html")
-
-
-# # # # =====================
-# # # # SIMPLE LOGIN API
-# # # # =====================
 # # # @auth_bp.route("/api/login", methods=["POST"])
-# # # def api_login():
+# # # def login():
 # # #     data = request.get_json()
 
 # # #     email = data.get("email")
-# # #     password = data.get("password")  # only for demo
+# # #     role = data.get("role")
 
-# # #     # Fetch user from profiles table
-# # #     user = supabase.table("profiles") \
-# # #         .select("*") \
-# # #         .eq("email", email) \
-# # #         .execute()
+# # #     url = f"{SUPABASE_URL}/rest/v1/profiles?email=eq.{email}&role=eq.{role}"
 
-# # #     if not user.data:
-# # #         return jsonify({"success": False, "message": "User not found"})
+# # #     res = requests.get(url, headers=HEADERS)
 
-# # #     role = user.data[0]["role"]
+# # #     if res.status_code == 200 and res.json():
+# # #         return jsonify({
+# # #             "success": True,
+# # #             "redirect": f"/{role}/dashboard"
+# # #         })
 
-# # #     # Demo password check (for submission)
-# # #     if password != "12345678":
-# # #         return jsonify({"success": False, "message": "Wrong password"})
-
-# # #     session["role"] = role
-
-# # #     if role == "admin":
-# # #         redirect_url = "/admin/dashboard"
-# # #     else:
-# # #         redirect_url = "/coord/dashboard"
-
-# # #     return jsonify({"success": True, "redirect": redirect_url})
+# # #     return jsonify({
+# # #         "success": False,
+# # #         "message": "Invalid credentials"
+# # #     })
 
 
-# # # @auth_bp.route("/logout")
-# # # def logout():
-# # #     session.clear()
-# # #     return redirect("/roles")
-
-# # from flask import Blueprint, request, jsonify, render_template, session, redirect
+# # correct one
+# # from flask import Blueprint, request, jsonify, render_template
+# # from config import SUPABASE_URL, HEADERS
+# # import requests
 
 # # auth_bp = Blueprint("auth", __name__)
 
-
-# # # ==============================
-# # # LOGIN PAGES
-# # # ==============================
-
+# # # ADMIN LOGIN PAGE
 # # @auth_bp.route("/admin/login")
 # # def admin_login():
 # #     return render_template("admin_login.html")
 
-
+# # # COORD LOGIN PAGE
 # # @auth_bp.route("/coord/login")
 # # def coord_login():
 # #     return render_template("coord_login.html")
 
 
-# # # ==============================
-# # # SIMPLE LOGIN API
-# # # ==============================
-
+# # # LOGIN API
 # # @auth_bp.route("/api/login", methods=["POST"])
-# # def api_login():
-# #     try:
-# #         data = request.get_json()
+# # def login():
+# #     data = request.get_json()
 
-# #         email = data.get("email")
-# #         password = data.get("password")
+# #     email = data.get("email")
+# #     role = data.get("role")
 
-# #         # DEMO PASSWORD
-# #         if password != "12345678":
-# #             return jsonify({
-# #                 "success": False,
-# #                 "message": "Invalid password"
-# #             })
+# #     # Query Supabase profiles table
+# #     url = f"{SUPABASE_URL}/rest/v1/profiles?email=eq.{email}&role=eq.{role}"
 
-# #         # ADMIN LOGIN
-# #         if email == "admin1@example.com":
-# #             session["role"] = "admin"
-# #             return jsonify({
-# #                 "success": True,
-# #                 "redirect": "/admin/dashboard"
-# #             })
+# #     res = requests.get(url, headers=HEADERS)
 
-# #         # COORDINATOR LOGIN
-# #         elif email == "coord1@example.com":
-# #             session["role"] = "coord"
-# #             return jsonify({
-# #                 "success": True,
-# #                 "redirect": "/coord/dashboard"
-# #             })
-
-# #         else:
-# #             return jsonify({
-# #                 "success": False,
-# #                 "message": "User not found"
-# #             })
-
-# #     except Exception as e:
+# #     if res.status_code == 200 and res.json():
 # #         return jsonify({
-# #             "success": False,
-# #             "message": str(e)
+# #             "success": True,
+# #             "redirect": f"/{role}/dashboard"
 # #         })
 
+# #     return jsonify({
+# #         "success": False,
+# #         "message": "Invalid email or role"
+# #     }) 
 
-# # # ==============================
-# # # LOGOUT
-# # # ==============================
-
-# # @auth_bp.route("/logout")
-# # def logout():
-# #     session.clear()
-# #     return redirect("/roles")
-
-# from flask import Blueprint, request, jsonify
-# from config import SUPABASE_URL, HEADERS
-# import requests
+# #working one
+# from flask import Blueprint, render_template, request, redirect, url_for, session
+# from config import supabase
 
 # auth_bp = Blueprint("auth", __name__)
 
-# @auth_bp.route("/api/login", methods=["POST"])
-# def login():
-#     data = request.get_json()
+# # =========================
+# # ADMIN LOGIN PAGE
+# # =========================
+# @auth_bp.route("/admin/login", methods=["GET", "POST"])
+# def admin_login():
+#     if request.method == "POST":
+#         email = request.form.get("email")
+#         password = request.form.get("password")
 
-#     email = data.get("email")
-#     role = data.get("role")
+#         # simple demo password
+#         if password != "12345678":
+#             return render_template("admin_login.html", error="Wrong password")
 
-#     url = f"{SUPABASE_URL}/rest/v1/profiles?email=eq.{email}&role=eq.{role}"
+#         # check in supabase
+#         res = supabase.table("profiles").select("*").eq("email", email).eq("role", "admin").execute()
 
-#     res = requests.get(url, headers=HEADERS)
+#         if res.data:
+#             session["user"] = email
+#             session["role"] = "admin"
+#             return redirect("/admin/dashboard")
 
-#     if res.status_code == 200 and res.json():
-#         return jsonify({
-#             "success": True,
-#             "redirect": f"/{role}/dashboard"
-#         })
+#         return render_template("admin_login.html", error="Invalid admin")
 
-#     return jsonify({
-#         "success": False,
-#         "message": "Invalid credentials"
-#     })
+#     return render_template("admin_login.html")
 
-from flask import Blueprint, request, jsonify, render_template
-from config import SUPABASE_URL, HEADERS
-import requests
+
+# # =========================
+# # COORD LOGIN PAGE
+# # =========================
+# @auth_bp.route("/coord/login", methods=["GET", "POST"])
+# def coord_login():
+#     if request.method == "POST":
+#         email = request.form.get("email")
+#         password = request.form.get("password")
+
+#         if password != "12345678":
+#             return render_template("coord_login.html", error="Wrong password")
+
+#         res = supabase.table("profiles").select("*").eq("email", email).eq("role", "coord").execute()
+
+#         if res.data:
+#             session["user"] = email
+#             session["role"] = "coord"
+#             return redirect("/coord/dashboard")
+
+#         return render_template("coord_login.html", error="Invalid coordinator")
+
+#     return render_template("coord_login.html")
+
+
+# # =========================
+# # LOGOUT
+# # =========================
+# @auth_bp.route("/logout")
+# def logout():
+#     session.clear()
+#     return redirect("/")
+
+# new
+from flask import Blueprint, request, jsonify, session
+from config import supabase
 
 auth_bp = Blueprint("auth", __name__)
 
-# ADMIN LOGIN PAGE
-@auth_bp.route("/admin/login")
-def admin_login():
-    return render_template("admin_login.html")
 
-# COORD LOGIN PAGE
-@auth_bp.route("/coord/login")
-def coord_login():
-    return render_template("coord_login.html")
-
-
-# LOGIN API
+# ===============================
+# SIMPLE LOGIN API (for fetch)
+# ===============================
 @auth_bp.route("/api/login", methods=["POST"])
-def login():
-    data = request.get_json()
+def login_api():
+    try:
+        data = request.get_json()
+        email = data.get("email")
+        password = data.get("password")
+        role = data.get("role")
 
-    email = data.get("email")
-    role = data.get("role")
+        # Simple demo password
+        if password != "12345678":
+            return jsonify({"success": False, "message": "Wrong password"})
 
-    # Query Supabase profiles table
-    url = f"{SUPABASE_URL}/rest/v1/profiles?email=eq.{email}&role=eq.{role}"
+        # Check in Supabase table
+        res = supabase.table("profiles") \
+            .select("*") \
+            .eq("email", email) \
+            .eq("role", role) \
+            .execute()
 
-    res = requests.get(url, headers=HEADERS)
+        if res.data:
+            # Save session
+            session["user"] = email
+            session["role"] = role
 
-    if res.status_code == 200 and res.json():
-        return jsonify({
-            "success": True,
-            "redirect": f"/{role}/dashboard"
-        })
+            # Redirect based on role
+            if role == "admin":
+                return jsonify({
+                    "success": True,
+                    "redirect": "/admin/dashboard"
+                })
 
-    return jsonify({
-        "success": False,
-        "message": "Invalid email or role"
-    })
+            if role == "coord":
+                return jsonify({
+                    "success": True,
+                    "redirect": "/coord/dashboard"
+                })
+
+        return jsonify({"success": False, "message": "Invalid email or role"})
+
+    except Exception as e:
+        return jsonify({"success": False, "message": str(e)})
+
+
+# ===============================
+# LOGOUT
+# ===============================
+@auth_bp.route("/logout")
+def logout():
+    session.clear()
+    return jsonify({"success": True})
