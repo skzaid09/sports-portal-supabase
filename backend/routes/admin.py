@@ -97,7 +97,6 @@
 #     )
 
 from flask import Blueprint, render_template
-from supabase import create_client
 import os
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")

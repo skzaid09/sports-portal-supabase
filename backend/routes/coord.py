@@ -52,7 +52,6 @@
 #     return render_template("coord/dashboard.html")
 
 from flask import Blueprint, render_template, request, jsonify
-from supabase import create_client
 import os
 
 coord_bp = Blueprint("coord", __name__, url_prefix="/coord")
