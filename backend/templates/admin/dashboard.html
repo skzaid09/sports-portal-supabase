@@ -41,6 +41,25 @@
     </table>
   </div>
 
+  <h2 class="mt-4">Registrations</h2>
+<table class="table table-bordered">
+<tr>
+  <th>Name</th>
+  <th>Sport</th>
+  <th>Type</th>
+  <th>Status</th>
+</tr>
+
+{% for p in players %}
+<tr>
+  <td>{{ p.name }}</td>
+  <td>{{ p.sport }}</td>
+  <td>{{ p.type }}</td>
+  <td>{{ p.status }}</td>
+</tr>
+{% endfor %}
+</table>
+
   <script>
     async function deleteUser(email) {
       if (confirm("Are you sure?")) {

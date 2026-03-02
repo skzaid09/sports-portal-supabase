@@ -20,4 +20,10 @@ c
 
 17 and 18 failed 
 
-19
+19 successfully run but still same problem and player registration page crash or unbond
+
+20 team registration work smoothly but notification is normal even data is stored in supabase 
+
+new3 is best
+
+new4 dashboards fixed this is the best one
