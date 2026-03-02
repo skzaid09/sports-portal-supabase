@@ -70,34 +70,11 @@
 #     return jsonify({"success": True})
 
 # #polish
-from flask import Blueprint, render_template, request, redirect, session, jsonify
+from flask import Blueprint, render_template
 
 player_bp = Blueprint("player", __name__, url_prefix="/player")
 
 
-# ================= DASHBOARD =================
-@player_bp.route("/dashboard")
-def dashboard():
-    if "user" not in session:
-        return redirect("/login")
-
-    # Fetch player registrations
-    response = supabase.table("players").select("*").execute()
-    players = response.data if response.data else []
-
-    return render_template("player/dashboard.html", players=players)
-
-
-# ================= SINGLE REGISTRATION =================
-@player_bp.route("/api/register-single", methods=["POST"])
-def register_single():
-    data = request.get_json()
-
-    supabase.table("players").insert({
-        "name": data["name"],
-        "sport": data["sport"],
-        "type": "Single",
-        "status": "Pending"
-    }).execute()
-
-    return jsonify({"success": True})
+@player_bp.route("/register")
+def register():
+    return render_template("player/register_single.html")
