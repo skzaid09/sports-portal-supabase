@@ -220,7 +220,7 @@ def register_single_api():
     try:
         data = request.get_json()
 
-        # ✅ create profile
+        # same stable insert method as team
         profile_payload = {
             "email": f"{data['roll_no']}@sports.com",
             "role": "player"
@@ -229,15 +229,19 @@ def register_single_api():
         profile_res = requests.post(
             f"{SUPABASE_URL}/rest/v1/profiles",
             json=profile_payload,
-            headers=HEADERS
+            headers={
+                **HEADERS,
+                "Prefer": "return=representation"  # 🔥 important
+            }
         )
 
         if profile_res.status_code not in [200, 201]:
-            return jsonify({"success": False, "message": "Profile failed"})
+            print(profile_res.text)
+            return jsonify({"success": False})
 
         user = profile_res.json()[0]
 
-        # ✅ insert player
+        # insert into players table
         player_payload = {
             "name": data["name"],
             "department": data["department"],
@@ -247,19 +251,21 @@ def register_single_api():
             "user_id": user["id"]
         }
 
-        requests.post(
+        player_res = requests.post(
             f"{SUPABASE_URL}/rest/v1/players",
             json=player_payload,
             headers=HEADERS
         )
+
+        if player_res.status_code not in [200, 201]:
+            print(player_res.text)
+            return jsonify({"success": False})
 
         return jsonify({"success": True})
 
     except Exception as e:
         print("Single error:", e)
         return jsonify({"success": False})
-
-
 # ======================
 # TEAM PLAYER
 # ======================
