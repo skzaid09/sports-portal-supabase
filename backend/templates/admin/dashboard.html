@@ -76,8 +76,6 @@
 </body>
 </html> -->
 
-{% extends "base.html" %}
-{% block content %}
 
 <div class="container mt-4">
 
@@ -102,53 +100,44 @@
 <!-- PLAYERS -->
 <div class="card p-3 shadow mb-4">
   <h4>🎮 Registered Players</h4>
+<table class="table">
+<tr>
+    <th>Name</th>
+    <th>Department</th>
+    <th>Roll</th>
+    <th>Sport</th>
+</tr>
 
-  <table class="table table-striped">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Dept</th>
-        <th>Roll</th>
-        <th>Sport</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for p in players %}
-      <tr>
-        <td>{{ p.name }}</td>
-        <td>{{ p.department }}</td>
-        <td>{{ p.roll_no }}</td>
-        <td>{{ p.sport }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+{% for p in players %}
+<tr>
+    <td>{{ p.name }}</td>
+    <td>{{ p.department }}</td>
+    <td>{{ p.roll_no }}</td>
+    <td>{{ p.sport }}</td>
+</tr>
+{% endfor %}
+</table>
 </div>
 
 <!-- TEAMS -->
 <div class="card p-3 shadow">
   <h4>🏆 Teams</h4>
+<table class="table">
+<tr>
+    <th>Team</th>
+    <th>Department</th>
+    <th>Sport</th>
+</tr>
 
-  <table class="table table-bordered">
-    <thead>
-      <tr>
-        <th>Team</th>
-        <th>Department</th>
-        <th>Sport</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for t in teams %}
-      <tr>
-        <td>{{ t.team_name }}</td>
-        <td>{{ t.department }}</td>
-        <td>{{ t.sport }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
+{% for t in teams %}
+<tr>
+    <td>{{ t.team_name }}</td>
+    <td>{{ t.department }}</td>
+    <td>{{ t.sport }}</td>
+</tr>
+{% endfor %}
+</table>
 </div>
 
 </div>
 
-{% endblock %}

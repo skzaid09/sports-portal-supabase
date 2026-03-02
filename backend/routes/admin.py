@@ -1,93 +1,118 @@
-# # # #new3
+# # # # #new3
+# # # # from flask import Blueprint, render_template, session, redirect
+
+# # # # admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
+
+
+# # # # @admin_bp.route("/login")
+# # # # def login():
+# # # #     return render_template("admin/login.html")
+
+
+# # # # @admin_bp.route("/dashboard")
+# # # # def dashboard():
+# # # #     if "role" not in session or session["role"] != "admin":
+# # # #         return redirect("/admin/login")
+
+# # # #     return render_template("admin/dashboard.html")
+
+# # # #new4
 # # # from flask import Blueprint, render_template, session, redirect
 
 # # # admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
-
 
 # # # @admin_bp.route("/login")
 # # # def login():
 # # #     return render_template("admin/login.html")
 
-
 # # # @admin_bp.route("/dashboard")
 # # # def dashboard():
-# # #     if "role" not in session or session["role"] != "admin":
+# # #     if "user" not in session or session["user"]["role"] != "admin":
 # # #         return redirect("/admin/login")
-
 # # #     return render_template("admin/dashboard.html")
 
-# # #new4
+# # # #polish
 # # from flask import Blueprint, render_template, session, redirect
 
 # # admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
+
+# # # ADMIN LOGIN
 # # @admin_bp.route("/login")
 # # def login():
 # #     return render_template("admin/login.html")
 
+
+# # # ADMIN DASHBOARD
 # # @admin_bp.route("/dashboard")
 # # def dashboard():
 # #     if "user" not in session or session["user"]["role"] != "admin":
 # #         return redirect("/admin/login")
+
 # #     return render_template("admin/dashboard.html")
 
-# # #polish
+# #dont know
 # from flask import Blueprint, render_template, session, redirect
+# import requests
+# import os
 
 # admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
+# SUPABASE_URL = os.getenv("SUPABASE_URL")
+# SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY")
 
-# # ADMIN LOGIN
+# HEADERS = {
+#     "apikey": SUPABASE_KEY,
+#     "Authorization": f"Bearer {SUPABASE_KEY}"
+# }
+
+# # LOGIN
 # @admin_bp.route("/login")
 # def login():
 #     return render_template("admin/login.html")
 
 
-# # ADMIN DASHBOARD
+# # DASHBOARD
 # @admin_bp.route("/dashboard")
 # def dashboard():
 #     if "user" not in session or session["user"]["role"] != "admin":
 #         return redirect("/admin/login")
 
-#     return render_template("admin/dashboard.html")
+#     # 🔥 fetch players
+#     players = requests.get(
+#         f"{SUPABASE_URL}/rest/v1/players?select=*",
+#         headers=HEADERS
+#     ).json()
 
-from flask import Blueprint, render_template, session, redirect
-import requests
+#     # 🔥 fetch teams
+#     teams = requests.get(
+#         f"{SUPABASE_URL}/rest/v1/teams?select=*",
+#         headers=HEADERS
+#     ).json()
+
+#     return render_template(
+#         "admin/dashboard.html",
+#         players=players,
+#         teams=teams
+#     )
+
+from flask import Blueprint, render_template
+from supabase import create_client
 import os
 
 admin_bp = Blueprint("admin", __name__, url_prefix="/admin")
 
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
-HEADERS = {
-    "apikey": SUPABASE_KEY,
-    "Authorization": f"Bearer {SUPABASE_KEY}"
-}
-
-# LOGIN
-@admin_bp.route("/login")
-def login():
-    return render_template("admin/login.html")
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
-# DASHBOARD
 @admin_bp.route("/dashboard")
 def dashboard():
-    if "user" not in session or session["user"]["role"] != "admin":
-        return redirect("/admin/login")
 
-    # 🔥 fetch players
-    players = requests.get(
-        f"{SUPABASE_URL}/rest/v1/players?select=*",
-        headers=HEADERS
-    ).json()
-
-    # 🔥 fetch teams
-    teams = requests.get(
-        f"{SUPABASE_URL}/rest/v1/teams?select=*",
-        headers=HEADERS
-    ).json()
+    players = supabase.table("players").select("*").execute().data
+    teams = supabase.table("teams").select("*").execute().data
 
     return render_template(
         "admin/dashboard.html",

@@ -51,47 +51,49 @@
 
 #     return render_template("coord/dashboard.html")
 
-from flask import Blueprint, render_template, session, redirect, request, jsonify
-import requests
+from flask import Blueprint, render_template, request, jsonify
+from supabase import create_client
 import os
 
 coord_bp = Blueprint("coord", __name__, url_prefix="/coord")
 
+# Supabase connection
 SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_ANON_KEY")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
-HEADERS = {
-    "apikey": SUPABASE_KEY,
-    "Authorization": f"Bearer {SUPABASE_KEY}"
-}
-
-@coord_bp.route("/login")
-def login():
-    return render_template("coord/login.html")
+supabase = create_client(SUPABASE_URL, SUPABASE_KEY)
 
 
+# =========================
+# Coordinator dashboard
+# =========================
 @coord_bp.route("/dashboard")
 def dashboard():
-    if "user" not in session or session["user"]["role"] != "coord":
-        return redirect("/coord/login")
-
-    matches = requests.get(
-        f"{SUPABASE_URL}/rest/v1/matches?select=*",
-        headers=HEADERS
-    ).json()
+    # Load matches from Supabase
+    res = supabase.table("matches").select("*").execute()
+    matches = res.data if res.data else []
 
     return render_template("coord/dashboard.html", matches=matches)
 
 
-# schedule match
-@coord_bp.route("/api/match", methods=["POST"])
-def create_match():
-    data = request.json
+# =========================
+# Save match to Supabase
+# =========================
+@coord_bp.route("/api/schedule-match", methods=["POST"])
+def schedule_match():
+    data = request.get_json()
 
-    res = requests.post(
-        f"{SUPABASE_URL}/rest/v1/matches",
-        json=data,
-        headers=HEADERS
-    )
+    try:
+        supabase.table("matches").insert({
+            "event": data["event"],
+            "team1": data["team1"],
+            "team2": data["team2"],
+            "date": data["date"],
+            "status": "Scheduled"
+        }).execute()
 
-    return jsonify({"success": True})
+        return jsonify({"success": True})
+
+    except Exception as e:
+        print("MATCH ERROR:", e)
+        return jsonify({"success": False})
