@@ -29,3 +29,8 @@ new3 is best
 new4 dashboards fixed this is the best one
 
 #polish single player3 : in this player single and team registration is working perfectly data is stored in supabase.(notifation)
+
+coord polish5 : in this coordinator dashboards works properly
+
+admin polish 2 : the almost fully correct and functional one
+
