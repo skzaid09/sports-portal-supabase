@@ -68,131 +68,132 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html> -->
+</html>
+
+polish player-->
 
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Single Player Registration</title>
+<title>Single Player Registration</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Bootstrap -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<style>
+body{
+  background: linear-gradient(135deg,#11998e,#38ef7d);
+  min-height:100vh;
+}
+.navbar{
+  background: linear-gradient(to right,#000428,#004e92);
+}
+.card{
+  border-radius:20px;
+  background:rgba(255,255,255,0.95);
+  backdrop-filter:blur(12px);
+}
+.btn-success{
+  border-radius:30px;
+  transition:0.3s;
+}
+.btn-success:hover{
+  transform:scale(1.03);
+}
+</style>
 </head>
 
-<body class="bg-light">
+<body>
 
-<div class="container py-5">
-  <div class="row justify-content-center">
-    <div class="col-md-6">
+<nav class="navbar navbar-dark shadow">
+  <div class="container">
+    <span class="navbar-brand fw-bold">🎯 Player Registration</span>
+    <a href="/qr" class="btn btn-outline-light btn-sm">Logout</a>
+  </div>
+</nav>
 
-      <div class="card shadow-lg p-4">
-        <h3 class="text-center mb-4">🏅 Single Player Registration</h3>
+<div class="container mt-5 mb-5">
 
-        <form id="singleForm">
+<div class="card shadow p-4 mx-auto" style="max-width:500px;">
+  <h4 class="text-center mb-4">Single Player Registration</h4>
 
-          <!-- NAME -->
-          <div class="mb-3">
-            <label class="form-label">Full Name</label>
-            <input type="text" class="form-control" id="name" required>
-          </div>
+  <form id="playerForm">
+    <input class="form-control mb-3" id="name" placeholder="Full Name" required>
+    <input class="form-control mb-3" id="department" placeholder="Department" required>
+    <input class="form-control mb-3" id="roll" placeholder="Roll Number" required>
 
-          <!-- DEPARTMENT -->
-          <div class="mb-3">
-            <label class="form-label">Department</label>
-            <input type="text" class="form-control" id="department" required>
-          </div>
+    <select class="form-control mb-3" id="sport" required>
+      <option value="">Select Sport</option>
+      <option>Football</option>
+      <option>Cricket</option>
+      <option>Basketball</option>
+      <option>Table Tennis</option>
+      <option>Chess</option>
+    </select>
 
-          <!-- ROLL -->
-          <div class="mb-3">
-            <label class="form-label">Roll Number</label>
-            <input type="text" class="form-control" id="roll" required>
-          </div>
+    <div id="loader" class="text-center mb-3" style="display:none;">
+      <div class="spinner-border text-success"></div>
+      <p class="mt-2">Registering player...</p>
+    </div>
 
-          <!-- SPORT -->
-          <div class="mb-3">
-            <label class="form-label">Select Sport</label>
-            <select class="form-select" id="sport" required>
-              <option value="">Choose...</option>
-              <option>Football</option>
-              <option>Cricket</option>
-              <option>Badminton</option>
-              <option>Volleyball</option>
-              <option>Basketball</option>
-              <option>Table Tennis</option>
-              <option>Chess</option>
-            </select>
-          </div>
+    <button class="btn btn-success w-100">Register Player</button>
+  </form>
 
-          <!-- LOADING -->
-          <div id="loader" class="text-center mb-3" style="display:none;">
-            <div class="spinner-border text-primary"></div>
-            <p>Registering player...</p>
-          </div>
+  <div class="text-center mt-3">
+    <a href="/player/register">← Back</a>
+  </div>
 
-          <!-- BUTTON -->
-          <button class="btn btn-success w-100" type="submit">
-            ✔ Register Player
-          </button>
+</div>
 
-        </form>
+</div>
 
-        <a href="/player/register" class="btn btn-link mt-3">
-          ← Back to Options
-        </a>
-
-      </div>
-
+<!-- TOAST -->
+<div class="position-fixed bottom-0 end-0 p-3">
+  <div id="liveToast" class="toast text-bg-success border-0">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMessage"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
     </div>
   </div>
 </div>
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 <script>
-document.getElementById("singleForm").addEventListener("submit", async (e) => {
+function showToast(message,type="success"){
+  const toastEl=document.getElementById('liveToast');
+  toastEl.className="toast text-bg-"+type+" border-0";
+  document.getElementById('toastMessage').innerText=message;
+  new bootstrap.Toast(toastEl).show();
+}
+
+document.getElementById("playerForm").addEventListener("submit",async function(e){
   e.preventDefault();
 
-  const data = {
-    name: document.getElementById("name").value,
-    department: document.getElementById("department").value,
-    roll_no: document.getElementById("roll").value,
-    sport: document.getElementById("sport").value
+  document.getElementById("loader").style.display="block";
+
+  const data={
+    name:name.value,
+    department:department.value,
+    roll_no:roll.value,
+    sport:sport.value
   };
 
-  // Validation
-  if (!data.name || !data.department || !data.roll_no || !data.sport) {
-    alert("Please fill all fields!");
-    return;
-  }
+  const res=await fetch("/player/api/register-single",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(data)
+  });
 
-  document.getElementById("loader").style.display = "block";
+  document.getElementById("loader").style.display="none";
 
-  try {
-    const res = await fetch("/player/api/register-single", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(data)
-    });
+  const result=await res.json();
 
-    const result = await res.json();
-
-    document.getElementById("loader").style.display = "none";
-
-    if (result.success) {
-      alert("🎉 Player registered successfully!");
-      window.location.href = "/roles";
-    } else {
-      alert("❌ Error: " + (result.error || "Registration failed"));
-    }
-
-  } catch (err) {
-    document.getElementById("loader").style.display = "none";
-    alert("Server error! Please try again.");
-    console.error(err);
+  if(result.success){
+    showToast("🎉 Player Registered Successfully!");
+    this.reset();
+  }else{
+    showToast("Registration Failed","danger");
   }
 });
 </script>

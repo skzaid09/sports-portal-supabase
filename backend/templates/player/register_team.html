@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -98,5 +98,132 @@ document.getElementById("teamForm").addEventListener("submit", async e => {
   }
 });
 </script>
+</body>
+</html> 
+
+polish player-->
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Team Registration</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body{
+  background: linear-gradient(135deg,#fc466b,#3f5efb);
+  min-height:100vh;
+}
+.navbar{
+  background: linear-gradient(to right,#000428,#004e92);
+}
+.card{
+  border-radius:20px;
+  background:rgba(255,255,255,0.95);
+}
+.btn-primary{
+  border-radius:30px;
+  transition:0.3s;
+}
+.btn-primary:hover{
+  transform:scale(1.03);
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark shadow">
+  <div class="container">
+    <span class="navbar-brand fw-bold">🤝 Team Registration</span>
+    <a href="/qr" class="btn btn-outline-light btn-sm">Logout</a>
+  </div>
+</nav>
+
+<div class="container mt-5 mb-5">
+
+<div class="card shadow p-4 mx-auto" style="max-width:600px;">
+  <h4 class="text-center mb-4">Register Team</h4>
+
+  <form id="teamForm">
+    <input class="form-control mb-3" id="teamName" placeholder="Team Name" required>
+    <input class="form-control mb-3" id="department" placeholder="Department" required>
+
+    <select class="form-control mb-3" id="sport" required>
+      <option value="">Select Sport</option>
+      <option>Football</option>
+      <option>Cricket</option>
+      <option>Basketball</option>
+      <option>Table Tennis</option>
+      <option>Chess</option>
+    </select>
+
+    <div id="loader" class="text-center mb-3" style="display:none;">
+      <div class="spinner-border text-primary"></div>
+      <p class="mt-2">Registering team...</p>
+    </div>
+
+    <button class="btn btn-primary w-100">Register Team</button>
+  </form>
+
+  <div class="text-center mt-3">
+    <a href="/player/register">← Back</a>
+  </div>
+
+</div>
+
+</div>
+
+<div class="position-fixed bottom-0 end-0 p-3">
+  <div id="liveToast" class="toast text-bg-success border-0">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMessage"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+function showToast(message,type="success"){
+  const toastEl=document.getElementById('liveToast');
+  toastEl.className="toast text-bg-"+type+" border-0";
+  document.getElementById('toastMessage').innerText=message;
+  new bootstrap.Toast(toastEl).show();
+}
+
+document.getElementById("teamForm").addEventListener("submit",async function(e){
+  e.preventDefault();
+
+  document.getElementById("loader").style.display="block";
+
+  const data={
+    team_name:teamName.value,
+    department:department.value,
+    sport:sport.value
+  };
+
+  const res=await fetch("/player/api/register-team",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(data)
+  });
+
+  document.getElementById("loader").style.display="none";
+
+  const result=await res.json();
+
+  if(result.success){
+    showToast("🎉 Team Registered Successfully!");
+    this.reset();
+  }else{
+    showToast("Registration Failed","danger");
+  }
+});
+</script>
+
 </body>
 </html>
