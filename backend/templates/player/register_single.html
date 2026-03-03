@@ -68,21 +68,21 @@
   </script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
-</html>
+</html> -->
 
-polish player-->
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Single Player Registration</title>
-<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
 body{
-  background: linear-gradient(135deg,#11998e,#38ef7d);
+  background: linear-gradient(135deg,#00b09b,#96c93d);
   min-height:100vh;
 }
 .navbar{
@@ -98,7 +98,7 @@ body{
   transition:0.3s;
 }
 .btn-success:hover{
-  transform:scale(1.03);
+  transform:scale(1.05);
 }
 </style>
 </head>
@@ -107,54 +107,60 @@ body{
 
 <nav class="navbar navbar-dark shadow">
   <div class="container">
-    <span class="navbar-brand fw-bold">🎯 Player Registration</span>
+    <span class="navbar-brand fw-bold">🏅 Player Registration</span>
     <a href="/qr" class="btn btn-outline-light btn-sm">Logout</a>
   </div>
 </nav>
 
-<div class="container mt-5 mb-5">
+<div class="container py-5">
+<div class="row justify-content-center">
+<div class="col-md-6">
 
-<div class="card shadow p-4 mx-auto" style="max-width:500px;">
-  <h4 class="text-center mb-4">Single Player Registration</h4>
+<div class="card shadow-lg p-4">
 
-  <form id="playerForm">
-    <input class="form-control mb-3" id="name" placeholder="Full Name" required>
-    <input class="form-control mb-3" id="department" placeholder="Department" required>
-    <input class="form-control mb-3" id="roll" placeholder="Roll Number" required>
+<h3 class="text-center mb-4">Single Player Registration</h3>
 
-    <select class="form-control mb-3" id="sport" required>
-      <option value="">Select Sport</option>
-      <option>Football</option>
-      <option>Cricket</option>
-      <option>Basketball</option>
-      <option>Table Tennis</option>
-      <option>Chess</option>
-    </select>
+<form id="singleForm">
 
-    <div id="loader" class="text-center mb-3" style="display:none;">
-      <div class="spinner-border text-success"></div>
-      <p class="mt-2">Registering player...</p>
-    </div>
+<input type="text" class="form-control mb-3" id="name" placeholder="Full Name" required>
+<input type="text" class="form-control mb-3" id="department" placeholder="Department" required>
+<input type="text" class="form-control mb-3" id="roll" placeholder="Roll Number" required>
 
-    <button class="btn btn-success w-100">Register Player</button>
-  </form>
+<select class="form-select mb-3" id="sport" required>
+<option value="">Select Sport</option>
+<option>Football</option>
+<option>Cricket</option>
+<option>Badminton</option>
+<option>Volleyball</option>
+<option>Basketball</option>
+<option>Table Tennis</option>
+<option>Chess</option>
+</select>
 
-  <div class="text-center mt-3">
-    <a href="/player/register">← Back</a>
-  </div>
-
+<div id="loader" class="text-center mb-3" style="display:none;">
+<div class="spinner-border text-success"></div>
+<p class="mt-2">Registering player...</p>
 </div>
 
+<button class="btn btn-success w-100">Register Player</button>
+
+</form>
+
+<a href="/player/register" class="btn btn-link mt-3">← Back to Options</a>
+
+</div>
+</div>
+</div>
 </div>
 
 <!-- TOAST -->
 <div class="position-fixed bottom-0 end-0 p-3">
-  <div id="liveToast" class="toast text-bg-success border-0">
-    <div class="d-flex">
-      <div class="toast-body" id="toastMessage"></div>
-      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-    </div>
-  </div>
+<div id="liveToast" class="toast text-bg-success border-0">
+<div class="d-flex">
+<div class="toast-body" id="toastMessage"></div>
+<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+</div>
+</div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -167,34 +173,44 @@ function showToast(message,type="success"){
   new bootstrap.Toast(toastEl).show();
 }
 
-document.getElementById("playerForm").addEventListener("submit",async function(e){
-  e.preventDefault();
+document.getElementById("singleForm").addEventListener("submit", async function(e){
+e.preventDefault();
 
-  document.getElementById("loader").style.display="block";
+const data={
+  name:name.value,
+  department:department.value,
+  roll_no:roll.value,
+  sport:sport.value
+};
 
-  const data={
-    name:name.value,
-    department:department.value,
-    roll_no:roll.value,
-    sport:sport.value
-  };
+if(!data.name || !data.department || !data.roll_no || !data.sport){
+  showToast("Please fill all fields","danger");
+  return;
+}
 
-  const res=await fetch("/player/api/register-single",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(data)
-  });
+loader.style.display="block";
 
-  document.getElementById("loader").style.display="none";
+try{
+const res=await fetch("/player/api/register-single",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(data)
+});
 
-  const result=await res.json();
+const result=await res.json();
+loader.style.display="none";
 
-  if(result.success){
-    showToast("🎉 Player Registered Successfully!");
-    this.reset();
-  }else{
-    showToast("Registration Failed","danger");
-  }
+if(result.success){
+  showToast("🎉 Player Registered Successfully!");
+  setTimeout(()=>{ window.location.href="/roles"; },1500);
+}else{
+  showToast(result.error || "Registration Failed","danger");
+}
+
+}catch(err){
+loader.style.display="none";
+showToast("Server Error","danger");
+}
 });
 </script>
 
