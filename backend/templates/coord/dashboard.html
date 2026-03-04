@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html>
 <head>
 <title>Coordinator Dashboard</title>
@@ -126,6 +126,165 @@ document.getElementById("scheduleForm").addEventListener("submit",async function
 });
 
 loadMatches();
+</script>
+
+</body>
+</html> -->
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Coordinator Dashboard</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+body {
+    background: linear-gradient(135deg,#667eea,#764ba2);
+    min-height:100vh;
+}
+.navbar{
+    background:linear-gradient(to right,#000428,#004e92);
+}
+.card{
+    border-radius:18px;
+    background:rgba(255,255,255,0.95);
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar navbar-dark shadow">
+  <div class="container">
+    <span class="navbar-brand fw-bold">📅 Coordinator Panel</span>
+    <a href="/qr" class="btn btn-outline-light btn-sm">Logout</a>
+  </div>
+</nav>
+
+<div class="container mt-5 mb-5">
+
+<div class="card p-4 shadow mb-4">
+  <h4>Schedule Match</h4>
+
+  <form id="scheduleForm">
+
+    <input class="form-control mb-2" id="eventName" placeholder="Event Name" required>
+
+    <input class="form-control mb-2" id="team1" placeholder="Team 1" required>
+
+    <input class="form-control mb-2" id="team2" placeholder="Team 2" required>
+
+    <input class="form-control mb-3" type="date" id="date" required>
+
+    <button class="btn btn-dark w-100">Schedule Match</button>
+
+  </form>
+</div>
+
+<div class="card p-4 shadow">
+  <h4>🎮 Matches</h4>
+
+  <table class="table table-striped mt-3">
+    <thead>
+      <tr>
+        <th>Event</th>
+        <th>Team 1</th>
+        <th>Team 2</th>
+        <th>Date</th>
+        <th>Status</th>
+      </tr>
+    </thead>
+
+    <tbody id="matchTable"></tbody>
+
+  </table>
+</div>
+
+</div>
+
+<!-- TOAST -->
+<div class="position-fixed bottom-0 end-0 p-3">
+  <div id="liveToast" class="toast text-bg-success border-0">
+    <div class="d-flex">
+      <div class="toast-body" id="toastMessage"></div>
+      <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+function showToast(message,type="success"){
+    const toastEl=document.getElementById('liveToast');
+    toastEl.className="toast text-bg-"+type+" border-0";
+    document.getElementById('toastMessage').innerText=message;
+    new bootstrap.Toast(toastEl).show();
+}
+
+
+async function loadMatches(){
+
+  const res=await fetch("/coord/api/get-matches");
+  const matches=await res.json();
+
+  let rows="";
+
+  matches.forEach(m=>{
+
+    rows+=`
+      <tr>
+        <td>${m.event ?? "-"}</td>
+        <td>${m.team1}</td>
+        <td>${m.team2}</td>
+        <td>${m.date}</td>
+        <td>${m.status}</td>
+      </tr>
+    `;
+
+  });
+
+  document.getElementById("matchTable").innerHTML=rows;
+
+}
+
+
+document.getElementById("scheduleForm").addEventListener("submit",async function(e){
+
+  e.preventDefault();
+
+  const data={
+    event:document.getElementById("eventName").value,
+    team1:document.getElementById("team1").value,
+    team2:document.getElementById("team2").value,
+    date:document.getElementById("date").value
+  };
+
+  const res=await fetch("/coord/api/schedule-match",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(data)
+  });
+
+  const result=await res.json();
+
+  if(result.success){
+    showToast("Match Scheduled Successfully!");
+    document.getElementById("scheduleForm").reset();
+    loadMatches();
+  }
+  else{
+    showToast("Error scheduling match","danger");
+  }
+
+});
+
+
+loadMatches();
+
 </script>
 
 </body>
