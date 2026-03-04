@@ -67,9 +67,10 @@ def roles():
 # =============================
 # LOGOUT ROUTE 
 # =============================
-@app.route("/qr")
-def qr():
-    return render_template("qr.html")
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect("/")
 
 # =============================
 # HEALTH CHECK (IMPORTANT FOR RENDER)
