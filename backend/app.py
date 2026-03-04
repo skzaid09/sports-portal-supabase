@@ -2,6 +2,7 @@ from flask import Flask, render_template, request
 import os, base64, qrcode
 from io import BytesIO
 from dotenv import load_dotenv
+from flask import render_template, session
 
 # =============================
 # LOAD ENV VARIABLES
@@ -63,6 +64,12 @@ def home():
 def roles():
     return render_template("role_selection.html")
 
+# =============================
+# LOGOUT ROUTE 
+# =============================
+@app.route("/qr")
+def qr():
+    return render_template("qr.html")
 
 # =============================
 # HEALTH CHECK (IMPORTANT FOR RENDER)
