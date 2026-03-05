@@ -231,8 +231,7 @@
 #         return jsonify({"success": False})
 
 
-# cord polish5
-
+# update1
 from flask import Blueprint, render_template, session, redirect, request, jsonify
 import requests
 import os
@@ -293,7 +292,7 @@ def schedule_match():
         if res.status_code in [200, 201]:
             return jsonify({"success": True})
         else:
-            print(res.text)
+            print("MATCH SAVE ERROR:", res.text)
             return jsonify({"success": False})
 
     except Exception as e:
@@ -306,41 +305,6 @@ def schedule_match():
 # ======================
 @coord_bp.route("/api/get-matches")
 def get_matches():
-
-    
-#get event
-@coord_bp.route("/api/events")
-def get_events():
-    try:
-        res = requests.get(
-            f"{SUPABASE_URL}/rest/v1/events?select=*",
-            headers=HEADERS
-        )
-
-        if res.status_code == 200:
-            return jsonify(res.json())
-        else:
-            return jsonify([])
-    except:
-        return jsonify([])
-
-#get team
-@coord_bp.route("/api/teams")
-def get_teams():
-    try:
-        res = requests.get(
-            f"{SUPABASE_URL}/rest/v1/teams?select=*",
-            headers=HEADERS
-        )
-
-        if res.status_code == 200:
-            return jsonify(res.json())
-        else:
-            return jsonify([])
-    except:
-        return jsonify([])
-
-        
     try:
         res = requests.get(
             f"{SUPABASE_URL}/rest/v1/matches?select=*",
@@ -354,4 +318,46 @@ def get_teams():
 
     except Exception as e:
         print("FETCH ERROR:", e)
+        return jsonify([])
+
+
+# ======================
+# FETCH EVENTS
+# ======================
+@coord_bp.route("/api/events")
+def get_events():
+    try:
+        res = requests.get(
+            f"{SUPABASE_URL}/rest/v1/events?select=*",
+            headers=HEADERS
+        )
+
+        if res.status_code == 200:
+            return jsonify(res.json())
+        else:
+            return jsonify([])
+
+    except Exception as e:
+        print("EVENT FETCH ERROR:", e)
+        return jsonify([])
+
+
+# ======================
+# FETCH TEAMS
+# ======================
+@coord_bp.route("/api/teams")
+def get_teams():
+    try:
+        res = requests.get(
+            f"{SUPABASE_URL}/rest/v1/teams?select=*",
+            headers=HEADERS
+        )
+
+        if res.status_code == 200:
+            return jsonify(res.json())
+        else:
+            return jsonify([])
+
+    except Exception as e:
+        print("TEAM FETCH ERROR:", e)
         return jsonify([])
