@@ -306,6 +306,41 @@ def schedule_match():
 # ======================
 @coord_bp.route("/api/get-matches")
 def get_matches():
+
+    
+#get event
+@coord_bp.route("/api/events")
+def get_events():
+    try:
+        res = requests.get(
+            f"{SUPABASE_URL}/rest/v1/events?select=*",
+            headers=HEADERS
+        )
+
+        if res.status_code == 200:
+            return jsonify(res.json())
+        else:
+            return jsonify([])
+    except:
+        return jsonify([])
+
+#get team
+@coord_bp.route("/api/teams")
+def get_teams():
+    try:
+        res = requests.get(
+            f"{SUPABASE_URL}/rest/v1/teams?select=*",
+            headers=HEADERS
+        )
+
+        if res.status_code == 200:
+            return jsonify(res.json())
+        else:
+            return jsonify([])
+    except:
+        return jsonify([])
+
+        
     try:
         res = requests.get(
             f"{SUPABASE_URL}/rest/v1/matches?select=*",
