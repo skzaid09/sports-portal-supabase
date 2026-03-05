@@ -258,3 +258,26 @@ def register_team_api():
     except Exception as e:
         print("Team error:", e)
         return jsonify({"success": False})
+
+
+# Events
+
+# show events page
+@player_bp.route("/events")
+def player_events():
+    return render_template("player/events.html")
+
+
+# fetch events API
+@player_bp.route("/api/events")
+def api_events():
+
+    res = requests.get(
+        f"{SUPABASE_URL}/rest/v1/events?select=*",
+        headers=HEADERS
+    )
+
+    if res.status_code == 200:
+        return jsonify(res.json())
+    else:
+        return jsonify([])
