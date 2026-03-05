@@ -1,90 +1,112 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Player Dashboard</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Player Dashboard</title>
 
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+<style>
+
+body{
+background: linear-gradient(135deg,#eef2f3,#dfe9f3);
+min-height:100vh;
+}
+
+.navbar{
+background:#000;
+}
+
+.reg-card{
+border-radius:18px;
+transition:0.3s;
+cursor:pointer;
+}
+
+.reg-card:hover{
+transform:translateY(-6px);
+box-shadow:0 10px 25px rgba(0,0,0,0.2);
+}
+
+.icon{
+font-size:50px;
+}
+
+</style>
+
 </head>
 
-<body class="bg-light">
+<body>
 
-  <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg navbar-dark bg-success">
-    <div class="container">
-      <a class="navbar-brand" href="#">🏅 Player Dashboard</a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
-        <span class="navbar-toggler-icon"></span>
-      </button>
+<!-- NAVBAR -->
 
-      <div class="collapse navbar-collapse" id="nav">
-        <ul class="navbar-nav ms-auto">
-          <li class="nav-item">
-            <a class="nav-link" href="/player/register">Register</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/player/logout">Logout</a>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
+<nav class="navbar navbar-dark shadow">
+<div class="container">
 
-  <!-- MAIN -->
-  <div class="container mt-4">
+<span class="navbar-brand fw-bold">
+🏅 Player Dashboard
+</span>
 
-    <h2 class="mb-4">🎯 Register for Events</h2>
+<a href="/" class="btn btn-outline-light btn-sm">
+Logout
+</a>
 
-    <div class="row g-4">
-      <div class="col-md-6" onclick="window.location='/player/register/single'" style="cursor:pointer;">
-        <div class="card shadow text-center p-4">
-          <div class="display-4 mb-3">🧍</div>
-          <h5>Single Player</h5>
-          <p class="text-muted">Register for individual sports</p>
-        </div>
-      </div>
+</div>
+</nav>
 
-      <div class="col-md-6" onclick="window.location='/player/register/team'" style="cursor:pointer;">
-        <div class="card shadow text-center p-4">
-          <div class="display-4 mb-3">🤝</div>
-          <h5>Team Registration</h5>
-          <p class="text-muted">Register a full team</p>
-        </div>
-      </div>
-    </div>
 
-    <!-- REGISTRATION LIST -->
-    <h2 class="mt-5">📊 Your Registrations</h2>
+<div class="container mt-5">
 
-    {% if players %}
-    <table class="table table-striped mt-3">
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Sport</th>
-          <th>Type</th>
-          <th>Status</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for player in players %}
-        <tr>
-          <td>{{ player.name }}</td>
-          <td>{{ player.sport }}</td>
-          <td>{{ player.type }}</td>
-          <td>{{ player.status }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    {% else %}
-      <p class="text-muted mt-3">No registrations yet.</p>
-    {% endif %}
+<h2 class="mb-4">🎯 Register for Events</h2>
 
-  </div>
+<div class="row g-4">
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<!-- SINGLE PLAYER -->
+
+<div class="col-md-6">
+
+<div class="card reg-card text-center p-4 shadow"
+onclick="window.location='/player/register/single'">
+
+<div class="icon mb-3">🧍</div>
+
+<h4>Single Player</h4>
+
+<p class="text-muted">
+Register for individual sports
+</p>
+
+</div>
+
+</div>
+
+
+<!-- TEAM -->
+
+<div class="col-md-6">
+
+<div class="card reg-card text-center p-4 shadow"
+onclick="window.location='/player/register/team'">
+
+<div class="icon mb-3">🤝</div>
+
+<h4>Team Registration</h4>
+
+<p class="text-muted">
+Register a full team
+</p>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
