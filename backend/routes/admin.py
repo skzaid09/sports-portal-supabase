@@ -96,8 +96,12 @@ def create_event():
         json=payload
     )
 
-    return jsonify({"success": res.status_code in [200, 201]})
+    print("SUPABASE RESPONSE:", res.text)
 
+    if res.status_code in [200,201]:
+        return jsonify({"success": True})
+    else:
+        return jsonify({"success": False})
 
 # ======================
 # DELETE PLAYER
