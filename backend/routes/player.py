@@ -260,7 +260,10 @@ def register_team_api():
         return jsonify({"success": False})
 
 
-# Events
+
+# ======================
+# VIEW EVENTS
+# ======================
 
 # show events page
 @player_bp.route("/events")
@@ -281,3 +284,11 @@ def api_events():
         return jsonify(res.json())
     else:
         return jsonify([])
+
+# ======================
+# MATCH SCHEDULE PAGE
+# ======================
+
+@player_bp.route("/matches")
+def view_matches():
+    return render_template("player/matches.html")
