@@ -113,9 +113,7 @@ select,input{
 
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-
 
 function showToast(message,type="success"){
 const toastEl=document.getElementById("liveToast")
@@ -124,23 +122,25 @@ document.getElementById("toastMessage").innerText=message
 new bootstrap.Toast(toastEl).show()
 }
 
-
-
 async function loadEvents(){
 
 const res = await fetch("/coord/api/events")
 const events = await res.json()
 
-let options = "<option value=''>Select Event</option>"
+let options="<option value=''>Select Event</option>"
 
 events.forEach(e=>{
-options += `<option value="${e.name}">${e.name}</option>`
-})
 
-document.getElementById("eventName").innerHTML = options
-
+// show only TEAM events
+if(e.type && e.type.toLowerCase()=="team"){
+options+=`<option value="${e.name}">${e.name}</option>`
 }
 
+})
+
+document.getElementById("eventName").innerHTML=options
+
+}
 
 
 async function loadTeams(){
@@ -148,17 +148,16 @@ async function loadTeams(){
 const res = await fetch("/coord/api/teams")
 const teams = await res.json()
 
-let options = "<option value=''>Select Team</option>"
+let options="<option value=''>Select Team</option>"
 
 teams.forEach(t=>{
-options += `<option value="${t.team_name}">${t.team_name}</option>`
+options+=`<option value="${t.team_name}">${t.team_name}</option>`
 })
 
-document.getElementById("team1").innerHTML = options
-document.getElementById("team2").innerHTML = options
+document.getElementById("team1").innerHTML=options
+document.getElementById("team2").innerHTML=options
 
 }
-
 
 
 async function loadMatches(){
@@ -166,11 +165,11 @@ async function loadMatches(){
 const res = await fetch("/coord/api/get-matches")
 const matches = await res.json()
 
-let rows = ""
+let rows=""
 
 matches.forEach(m=>{
 
-rows += `
+rows+=`
 <tr>
 <td>${m.event ?? "-"}</td>
 <td>${m.team1}</td>
@@ -182,27 +181,24 @@ rows += `
 
 })
 
-document.getElementById("matchTable").innerHTML = rows
+document.getElementById("matchTable").innerHTML=rows
 
 }
-
 
 
 document.getElementById("scheduleForm").addEventListener("submit",async function(e){
 
 e.preventDefault()
 
-const event = document.getElementById("eventName").value
-const team1 = document.getElementById("team1").value
-const team2 = document.getElementById("team2").value
-const date = document.getElementById("date").value
+const event=document.getElementById("eventName").value
+const team1=document.getElementById("team1").value
+const team2=document.getElementById("team2").value
+const date=document.getElementById("date").value
 
-
-if(team1 === team2){
+if(team1===team2){
 showToast("Team1 and Team2 cannot be same","danger")
 return
 }
-
 
 const data={
 event:event,
@@ -211,14 +207,13 @@ team2:team2,
 date:date
 }
 
-
-const res = await fetch("/coord/api/schedule-match",{
+const res=await fetch("/coord/api/schedule-match",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify(data)
 })
 
-const result = await res.json()
+const result=await res.json()
 
 if(result.success){
 
@@ -228,32 +223,18 @@ document.getElementById("scheduleForm").reset()
 
 loadMatches()
 
-}
-else{
+}else{
+
 showToast("Error scheduling match","danger")
+
 }
 
 })
 
 
+/* LOAD PAGE DATA */
 
-async function loadEvents(){
-
-const res = await fetch("/coord/api/events")
-const events = await res.json()
-
-let options="<option value=''>Select Event</option>"
-
-events.forEach(e=>{
-if(e.type==="Team"){
-options+=`<option value="${e.name}">${e.name}</option>`
-}
-})
-
-document.getElementById("eventName").innerHTML=options
-
-}
-
+loadEvents()
 loadTeams()
 loadMatches()
 
