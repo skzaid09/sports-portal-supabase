@@ -127,157 +127,215 @@
 #         return jsonify({"success": False})
 
 #         above is correct
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Team Registration</title>
 
-from flask import Blueprint, render_template, request, jsonify
-import os
-import requests
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
-player_bp = Blueprint("player", __name__, url_prefix="/player")
+<style>
+body{
+  background: linear-gradient(135deg,#fc466b,#3f5efb);
+  min-height:100vh;
+}
+.navbar{
+  background: linear-gradient(to right,#000428,#004e92);
+}
+.card{
+  border-radius:20px;
+  background:rgba(150,178,179,0.95);
+}
+.btn-success{
+  border-radius:30px;
+}
+</style>
+</head>
 
-SUPABASE_URL = os.getenv("SUPABASE_URL")
-SUPABASE_KEY = os.getenv("SUPABASE_SERVICE_KEY")
+<body>
 
-HEADERS = {
-    "apikey": SUPABASE_KEY,
-    "Authorization": f"Bearer {SUPABASE_KEY}",
-    "Content-Type": "application/json",
-    "Prefer": "return=representation"
+<nav class="navbar navbar-dark shadow">
+<div class="container">
+<span class="navbar-brand fw-bold">🤝 Team Registration</span>
+<a href="/" class="btn btn-outline-light btn-sm">Logout</a>
+</div>
+</nav>
+
+<div class="container py-5">
+<div class="row justify-content-center">
+<div class="col-lg-7">
+
+<div class="card shadow-lg p-4">
+
+<h3 class="text-center mb-4">Register Team</h3>
+
+<form id="teamForm">
+
+<input type="text" class="form-control mb-3" id="team_name" placeholder="Team Name" required>
+
+<input type="text" class="form-control mb-3" id="department" placeholder="Department" required>
+
+<select class="form-select mb-3" id="sport" required>
+<option value="">Select Sport</option>
+</select>
+
+<h5 class="mt-3">Team Members</h5>
+
+<div id="players-container">
+
+<div class="row g-2 mb-2">
+<div class="col-md-6">
+<input class="form-control" placeholder="Player Name" required>
+</div>
+<div class="col-md-6">
+<input class="form-control" placeholder="Roll No" required>
+</div>
+</div>
+
+</div>
+
+<button type="button" class="btn btn-outline-primary mb-3" onclick="addPlayer()">+ Add Player</button>
+
+<div id="loader" class="text-center mb-3" style="display:none;">
+<div class="spinner-border text-primary"></div>
+<p>Registering team...</p>
+</div>
+
+<button type="submit" class="btn btn-success w-100">Register Team</button>
+
+</form>
+
+<a href="/player/register" class="btn btn-link mt-3">← Back to Options</a>
+
+</div>
+</div>
+</div>
+</div>
+
+<!-- TOAST -->
+
+<div class="position-fixed bottom-0 end-0 p-3">
+<div id="liveToast" class="toast text-bg-success border-0">
+<div class="d-flex">
+<div class="toast-body" id="toastMessage"></div>
+<button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+</div>
+</div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+function showToast(message,type="success"){
+const toastEl=document.getElementById("liveToast")
+toastEl.className="toast text-bg-"+type+" border-0"
+document.getElementById("toastMessage").innerText=message
+new bootstrap.Toast(toastEl).show()
 }
 
+function addPlayer(){
+const container=document.getElementById("players-container")
 
-# ======================
-# PAGES
-# ======================
+const row=document.createElement("div")
+row.className="row g-2 mb-2"
 
-@player_bp.route("/options")
-def options():
-    return render_template("player/options.html")
+row.innerHTML=`
+<div class="col-md-6">
+<input class="form-control" placeholder="Player Name" required>
+</div>
+<div class="col-md-6">
+<input class="form-control" placeholder="Roll No" required>
+</div>
+`
 
+container.appendChild(row)
+}
 
-@player_bp.route("/register")
-def register():
-    return render_template("player/register.html")
+async function loadTeamEvents(){
 
+const res=await fetch("/coord/api/events")
+const events=await res.json()
 
-@player_bp.route("/register/single")
-def register_single():
-    return render_template("player/register_single.html")
+let options="<option value=''>Select Sport</option>"
 
+events.forEach(e=>{
+if(e.type && e.type.toLowerCase()=="team"){
+options+=`<option value="${e.name}">${e.name}</option>`
+}
+})
 
-@player_bp.route("/register/team")
-def register_team():
-    return render_template("player/register_team.html")
+document.getElementById("sport").innerHTML=options
+}
 
-
-# ======================
-# SINGLE PLAYER
-# ======================
-
-@player_bp.route("/api/register-single", methods=["POST"])
-def api_single():
-    try:
-        data = request.get_json()
-
-        payload = {
-            "name": data["name"],
-            "department": data["department"],
-            "roll_no": data["roll_no"],
-            "sport": data["sport"],
-            "type": "single"
-        }
-
-        res = requests.post(
-            f"{SUPABASE_URL}/rest/v1/players",
-            json=payload,
-            headers=HEADERS
-        )
-
-        if res.status_code in [200, 201]:
-            return jsonify({"success": True})
-        else:
-            return jsonify({"success": False, "error": res.text})
-
-    except Exception as e:
-        print("Single player error:", e)
-        return jsonify({"success": False})
+loadTeamEvents()
 
 
-# ======================
-# TEAM REGISTRATION
-# ======================
+document.getElementById("teamForm").addEventListener("submit",async function(e){
 
-@player_bp.route("/api/register-team", methods=["POST"])
-def register_team_api():
-    try:
-        data = request.get_json()
+e.preventDefault()
 
-        # create team
-        team_payload = {
-            "team_name": data["team_name"],
-            "department": data["department"],
-            "sport": data["sport"]
-        }
+const loader=document.getElementById("loader")
 
-        team_res = requests.post(
-            f"{SUPABASE_URL}/rest/v1/teams",
-            json=team_payload,
-            headers=HEADERS
-        )
+const players=[]
 
-        if team_res.status_code not in [200, 201]:
-            print("Team insert error:", team_res.text)
-            return jsonify({"success": False})
+document.querySelectorAll("#players-container .row").forEach(row=>{
+const inputs=row.querySelectorAll("input")
 
-        team_data = team_res.json()
+players.push({
+name:inputs[0].value,
+roll_no:inputs[1].value
+})
+})
 
-        if not team_data:
-            return jsonify({"success": False})
+const data={
+team_name:document.getElementById("team_name").value,
+department:document.getElementById("department").value,
+sport:document.getElementById("sport").value,
+players:players
+}
 
-        team_id = team_data[0]["id"]
+loader.style.display="block"
 
-        # insert players
-        for p in data["players"]:
+try{
 
-            player_payload = {
-                "team_id": team_id,
-                "name": p["name"],
-                "roll_no": p["roll_no"]
-            }
+const res=await fetch("/player/api/register-team",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(data)
+})
 
-            res = requests.post(
-                f"{SUPABASE_URL}/rest/v1/team_players",
-                json=player_payload,
-                headers=HEADERS
-            )
+loader.style.display="none"
 
-            if res.status_code not in [200, 201]:
-                print("Player insert error:", res.text)
+const result=await res.json()
 
-        return jsonify({"success": True})
+if(result.success){
 
-    except Exception as e:
-        print("Team error:", e)
-        return jsonify({"success": False})
+showToast("🎉 Team Registered Successfully!")
 
+setTimeout(()=>{
+window.location.href="/roles"
+},1500)
 
-# Events
+}else{
 
-# show events page
-@player_bp.route("/events")
-def player_events():
-    return render_template("player/events.html")
+showToast("Registration Failed","danger")
 
+}
 
-# fetch events API
-@player_bp.route("/api/events")
-def api_events():
+}catch(err){
 
-    res = requests.get(
-        f"{SUPABASE_URL}/rest/v1/events?select=*",
-        headers=HEADERS
-    )
+loader.style.display="none"
 
-    if res.status_code == 200:
-        return jsonify(res.json())
-    else:
-        return jsonify([])
+showToast("Server Error","danger")
+
+}
+
+})
+
+</script>
+
+</body>
+</html>
