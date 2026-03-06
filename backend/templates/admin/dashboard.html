@@ -202,9 +202,15 @@ border-radius:30px;
 
 <script>
 
-function showToast(message){
+function showToast(message,type="success"){
 
-alert(message)
+const toastEl=document.getElementById("liveToast")
+
+toastEl.className="toast text-bg-"+type+" border-0"
+
+document.getElementById("toastMessage").innerText=message
+
+new bootstrap.Toast(toastEl).show()
 
 }
 

@@ -9,176 +9,118 @@
 
 <style>
 body{
-  background: linear-gradient(135deg,#6dd5ed,#2193b0);
-  min-height:100vh;
+background: linear-gradient(135deg,#6dd5ed,#2193b0);
+min-height:100vh;
 }
-
-h2{
-  font-weight:600;
+.form-control,.form-select{
+border-radius:10px;
 }
-
-.form-control, .form-select{
-  border-radius:10px;
-}
-
 .btn-success{
-  border-radius:30px;
-  font-weight:500;
-  transition:0.3s;
-}
-
-.btn-success:hover{
-  transform:scale(1.03);
-}
-
-.toast{
-  border-radius:12px;
+border-radius:30px;
 }
 </style>
-
 </head>
 
-<body class="bg-light">
+<body>
 
 <nav class="navbar navbar-dark bg-black shadow">
-  <div class="container">
-    <span class="navbar-brand fw-bold">🧍 Single Registration</span>
-    <a href="/" class="btn btn-outline-light btn-sm">Logout</a>
-  </div>
+<div class="container">
+<span class="navbar-brand fw-bold">🧍 Single Registration</span>
+<a href="/" class="btn btn-outline-light btn-sm">Logout</a>
+</div>
 </nav>
 
 <div class="container py-5">
 
 <div class="row justify-content-center">
-
 <div class="col-lg-6">
 
 <h2 class="text-center mb-4">🧍 Single Player Registration</h2>
 
 <form id="paymentForm">
 
-<div class="mb-3">
-<label class="form-label">Full Name</label>
-<input type="text" class="form-control" id="name" placeholder="e.g., Ali Khan" required>
-</div>
+<input class="form-control mb-3" id="name" placeholder="Full Name" required>
 
-<div class="mb-3">
-<label class="form-label">Department</label>
-<input type="text" class="form-control" id="department" placeholder="e.g., Computer Science" required>
-</div>
+<input class="form-control mb-3" id="department" placeholder="Department" required>
 
-<div class="mb-3">
-<label class="form-label">Roll Number</label>
-<input type="text" class="form-control" id="roll_no" placeholder="e.g., 22BCS123" required>
-</div>
+<input class="form-control mb-3" id="roll_no" placeholder="Roll Number" required>
 
-<div class="mb-3">
-<label class="form-label">Select Sport</label>
-<select class="form-select" id="sport" required>
-<option value="">-- Choose Individual Sport --</option>
-<option value="100m Running">100m Running</option>
-<option value="200m Running">200m Running</option>
-<option value="Discus Throw">Discus Throw</option>
-<option value="Shot Put">Shot Put</option>
-<option value="Long Jump">Long Jump</option>
-<option value="High Jump">High Jump</option>
+<select class="form-select mb-3" id="sport" required>
+<option value="">Select Sport</option>
 </select>
-</div>
 
-<button type="submit" class="btn btn-success w-100">
-✅ Register Now
-</button>
+<button class="btn btn-success w-100">Register</button>
 
 </form>
 
-<div class="text-center mt-3">
-<a href="/player/register" class="text-decoration-none">
-← Back to Options
-</a>
-</div>
-
 </div>
 </div>
 </div>
-
-
-<!-- TOAST NOTIFICATION -->
 
 <div class="position-fixed bottom-0 end-0 p-3">
-
 <div id="liveToast" class="toast text-bg-success border-0">
-
 <div class="d-flex">
-
-<div class="toast-body" id="toastMessage">
-Success
-</div>
-
+<div class="toast-body" id="toastMessage"></div>
 <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-
 </div>
-
 </div>
-
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 
 function showToast(message,type="success"){
-
-const toastEl=document.getElementById("liveToast");
-
-toastEl.className="toast text-bg-"+type+" border-0";
-
-document.getElementById("toastMessage").innerText=message;
-
-new bootstrap.Toast(toastEl).show();
-
+const toastEl=document.getElementById("liveToast")
+toastEl.className="toast text-bg-"+type+" border-0"
+document.getElementById("toastMessage").innerText=message
+new bootstrap.Toast(toastEl).show()
 }
 
-document.getElementById("paymentForm").addEventListener("submit", async (e)=>{
+async function loadIndividualEvents(){
 
-e.preventDefault();
+const res = await fetch("/coord/api/events")
+const events = await res.json()
+
+let options="<option value=''>Select Sport</option>"
+
+events.forEach(e=>{
+if(e.type==="Individual"){
+options+=`<option value="${e.name}">${e.name}</option>`
+}
+})
+
+document.getElementById("sport").innerHTML=options
+}
+
+document.getElementById("paymentForm").addEventListener("submit",async function(e){
+
+e.preventDefault()
 
 const data={
-name:document.getElementById("name").value,
-department:document.getElementById("department").value,
-roll_no:document.getElementById("roll_no").value,
-sport:document.getElementById("sport").value
-};
-
-try{
+name:name.value,
+department:department.value,
+roll_no:roll_no.value,
+sport:sport.value
+}
 
 const res=await fetch("/player/api/register-single",{
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify(data)
-});
+})
 
 if(res.ok){
-
-showToast("🎉 Registration Successful!");
-
-setTimeout(()=>{
-window.location.href="/roles";
-},1500);
-
-}else{
-
-showToast("Registration Failed","danger");
-
+showToast("Registration Successful")
+this.reset()
+}
+else{
+showToast("Registration Failed","danger")
 }
 
-}catch(err){
+})
 
-showToast("Server Error","danger");
-
-}
-
-});
+loadIndividualEvents()
 
 </script>
 

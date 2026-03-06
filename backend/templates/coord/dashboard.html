@@ -237,7 +237,23 @@ showToast("Error scheduling match","danger")
 
 
 
-loadEvents()
+async function loadEvents(){
+
+const res = await fetch("/coord/api/events")
+const events = await res.json()
+
+let options="<option value=''>Select Event</option>"
+
+events.forEach(e=>{
+if(e.type==="Team"){
+options+=`<option value="${e.name}">${e.name}</option>`
+}
+})
+
+document.getElementById("eventName").innerHTML=options
+
+}
+
 loadTeams()
 loadMatches()
 
