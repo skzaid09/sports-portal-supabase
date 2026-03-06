@@ -65,7 +65,10 @@ select,input{
 
 <label class="form-label">Match Date</label>
 <input class="form-control mb-3" type="date" id="date" required>
-
+<div id="loader" class="text-center mb-3" style="display:none;">
+<div class="spinner-border text-primary"></div>
+<p class="mt-2">Processing...</p>
+</div>
 <button class="btn btn-dark w-100">Schedule Match</button>
 
 </form>
@@ -190,12 +193,16 @@ document.getElementById("scheduleForm").addEventListener("submit",async function
 
 e.preventDefault()
 
+const loader=document.getElementById("loader")
+loader.style.display="block"
+
 const event=document.getElementById("eventName").value
 const team1=document.getElementById("team1").value
 const team2=document.getElementById("team2").value
 const date=document.getElementById("date").value
 
 if(team1===team2){
+loader.style.display="none"
 showToast("Team1 and Team2 cannot be same","danger")
 return
 }
@@ -213,24 +220,19 @@ headers:{"Content-Type":"application/json"},
 body:JSON.stringify(data)
 })
 
+loader.style.display="none"
+
 const result=await res.json()
 
 if(result.success){
-
 showToast("Match Scheduled Successfully!")
-
 document.getElementById("scheduleForm").reset()
-
 loadMatches()
-
 }else{
-
 showToast("Error scheduling match","danger")
-
 }
 
 })
-
 
 /* LOAD PAGE DATA */
 

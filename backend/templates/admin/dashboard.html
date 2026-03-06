@@ -314,81 +314,39 @@ document.getElementById("eventTable").innerHTML=rows
 
 
 
-document.getElementById("eventForm").addEventListener("submit",async function(e){
+ddocument.getElementById("eventForm").addEventListener("submit",async function(e){
 
 e.preventDefault()
 
-const data={
+const loader=document.getElementById("loader")
+loader.style.display="block"
 
+const data={
 name:document.getElementById("eventName").value,
 type:document.getElementById("eventType").value,
 date:document.getElementById("eventDate").value,
 location:document.getElementById("eventLocation").value
-
 }
 
 const res=await fetch("/admin/api/create-event",{
-
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify(data)
-
 })
+
+loader.style.display="none"
 
 const result=await res.json()
 
 if(result.success){
-
 showToast("Event Created")
-
 this.reset()
-
 loadEvents()
-
 }else{
-
 showToast("Error Creating Event","danger")
-
 }
 
 })
-
-
-
-async function deletePlayer(id){
-
-await fetch("/admin/api/delete-player/"+id,{method:"DELETE"})
-
-showToast("Player Deleted","danger")
-
-loadPlayers()
-
-}
-
-
-
-async function deleteTeam(id){
-
-await fetch("/admin/api/delete-team/"+id,{method:"DELETE"})
-
-showToast("Team Deleted","danger")
-
-loadTeams()
-
-}
-
-
-
-async function deleteEvent(id){
-
-await fetch("/admin/api/delete-event/"+id,{method:"DELETE"})
-
-showToast("Event Deleted","danger")
-
-loadEvents()
-
-}
-
 
 
 loadPlayers()
