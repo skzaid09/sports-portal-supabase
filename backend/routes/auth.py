@@ -1,38 +1,3 @@
-# #new3
-# from flask import Blueprint, request, jsonify, session
-
-# auth_bp = Blueprint("auth", __name__)
-
-# # SIMPLE LOGIN (NO SUPABASE FOR DEMO)
-# @auth_bp.route("/api/login", methods=["POST"])
-# def login():
-#     data = request.get_json()
-#     email = data.get("email")
-#     password = data.get("password")
-#     role = data.get("role")
-
-#     # 🔥 SIMPLE DEMO LOGIC
-#     if role == "admin" and password == "admin123":
-#         session["user"] = {"email": email, "role": "admin"}
-#         return jsonify({
-#             "success": True,
-#             "redirect": "/admin/dashboard"
-#         })
-
-#     elif role == "coord" and password == "coord123":
-#         session["user"] = {"email": email, "role": "coord"}
-#         return jsonify({
-#             "success": True,
-#             "redirect": "/coord/dashboard"
-#         })
-
-#     else:
-#         return jsonify({
-#             "success": False,
-#             "message": "Invalid credentials"
-#         })
-
-#new4
 from flask import Blueprint, request, jsonify, session
 
 auth_bp = Blueprint("auth", __name__)

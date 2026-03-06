@@ -30,6 +30,19 @@ select,input{
     height:45px;
 }
 
+@media (max-width:768px){
+
+.container{
+padding-left:15px;
+padding-right:15px;
+}
+
+select,input{
+font-size:16px;
+}
+
+}
+
 </style>
 </head>
 
@@ -38,7 +51,7 @@ select,input{
 <!-- NAVBAR -->
 
 <nav class="navbar navbar-dark shadow">
-<div class="container">
+<div class="container-fluid px-3">
 <span class="navbar-brand fw-bold">📅 Coordinator Panel</span>
 <a href="/" class="btn btn-outline-light btn-sm">Logout</a>
 </div>
@@ -81,8 +94,8 @@ select,input{
 <div class="card p-4 shadow">
 
 <h4 class="section-title">🎮 Scheduled Matches</h4>
-
-<table class="table table-striped mt-3">
+<div class="table-responsive">
+<table class="table table-striped">
 
 <thead class="table-dark">
 <tr>

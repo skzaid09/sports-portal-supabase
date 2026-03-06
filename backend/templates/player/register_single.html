@@ -1,136 +1,3 @@
-<!-- <!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Single Player Registration</title>
-
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-<style>
-body{
-background: linear-gradient(135deg,#6dd5ed,#2193b0);
-min-height:100vh;
-}
-.form-control,.form-select{
-border-radius:10px;
-}
-.btn-success{
-border-radius:30px;
-}
-</style>
-</head>
-
-<body>
-
-<nav class="navbar navbar-dark bg-black shadow">
-<div class="container">
-<span class="navbar-brand fw-bold">🧍 Single Registration</span>
-<a href="/" class="btn btn-outline-light btn-sm">Logout</a>
-</div>
-</nav>
-
-<div class="container py-5">
-
-<div class="row justify-content-center">
-<div class="col-lg-6">
-
-<h2 class="text-center mb-4">🧍 Single Player Registration</h2>
-
-<form id="paymentForm">
-
-<input class="form-control mb-3" id="name" placeholder="Full Name" required>
-
-<input class="form-control mb-3" id="department" placeholder="Department" required>
-
-<input class="form-control mb-3" id="roll_no" placeholder="Roll Number" required>
-
-<select class="form-select mb-3" id="sport" required>
-<option value="">Select Sport</option>
-</select>
-<div id="loader" class="text-center mb-3" style="display:none;">
-<div class="spinner-border text-primary"></div>
-<p class="mt-2">Processing...</p>
-</div>
-<button class="btn btn-success w-100">Register</button>
-
-</form>
-
-</div>
-</div>
-</div>
-
-<div class="position-fixed bottom-0 end-0 p-3">
-<div id="liveToast" class="toast text-bg-success border-0">
-<div class="d-flex">
-<div class="toast-body" id="toastMessage"></div>
-<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
-</div>
-</div>
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-
-function showToast(message,type="success"){
-const toastEl=document.getElementById("liveToast")
-toastEl.className="toast text-bg-"+type+" border-0"
-document.getElementById("toastMessage").innerText=message
-new bootstrap.Toast(toastEl).show()
-}
-
-async function loadIndividualEvents(){
-
-const res = await fetch("/coord/api/events")
-const events = await res.json()
-
-let options="<option value=''>Select Sport</option>"
-
-events.forEach(e=>{
-if(e.type==="Individual"){
-options+=`<option value="${e.name}">${e.name}</option>`
-}
-})
-
-document.getElementById("sport").innerHTML=options
-}
-
-document.getElementById("paymentForm").addEventListener("submit",async function(e){
-
-e.preventDefault()
-
-const data={
-name:name.value,
-department:department.value,
-roll_no:roll_no.value,
-sport:sport.value
-}
-
-const res=await fetch("/player/api/register-single",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify(data)
-})
-
-if(res.ok){
-showToast("Registration Successful")
-this.reset()
-}
-else{
-showToast("Registration Failed","danger")
-}
-
-})
-
-loadIndividualEvents()
-
-</script>
-
-</body>
-</html> 
-single colour-->
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -156,6 +23,14 @@ border-radius:18px;
 background:rgba(255,255,255,0.95);
 }
 
+@media (max-width:768px){
+
+.card{
+padding:20px;
+}
+
+}
+
 </style>
 
 </head>
@@ -163,7 +38,7 @@ background:rgba(255,255,255,0.95);
 <body>
 
 <nav class="navbar navbar-dark shadow">
-<div class="container">
+<div class="container-fluid px-3">
 <span class="navbar-brand fw-bold">🧍 Player Registration</span>
 <a href="/" class="btn btn-outline-light btn-sm">Logout</a>
 </div>
@@ -173,7 +48,7 @@ background:rgba(255,255,255,0.95);
 
 <div class="row justify-content-center">
 
-<div class="col-md-6">
+<div class="col-lg-6 col-md-8 col-12">
 
 <div class="card shadow p-4">
 
@@ -181,13 +56,13 @@ background:rgba(255,255,255,0.95);
 
 <form id="paymentForm">
 
-<input class="form-control mb-3" id="name" placeholder="Full Name" required>
+<input class="form-control w-100 mb-2" id="name" placeholder="Full Name" required>
 
-<input class="form-control mb-3" id="department" placeholder="Department" required>
+<input class="form-control w-100 mb-2" id="department" placeholder="Department" required>
 
-<input class="form-control mb-3" id="roll_no" placeholder="Roll Number" required>
+<input class="form-control w-100 mb-2" id="roll_no" placeholder="Roll Number" required>
 
-<select class="form-control mb-3" id="sport" required>
+<input class="form-control w-100 mb-2" id="sport" required>
 <option value="">Select Sport</option>
 </select>
 

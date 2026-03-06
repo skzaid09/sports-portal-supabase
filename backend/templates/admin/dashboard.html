@@ -34,6 +34,23 @@ padding:25px;
 border-radius:30px;
 }
 
+@media (max-width:768px){
+
+h4{
+font-size:20px;
+}
+
+.card{
+padding:20px;
+}
+
+.navbar .container{
+padding-left:15px;
+padding-right:15px;
+}
+
+}
+
 </style>
 
 </head>
@@ -41,7 +58,7 @@ border-radius:30px;
 <body>
 
 <nav class="navbar navbar-dark shadow">
-<div class="container">
+<div class="container-fluid px-3">
 <span class="navbar-brand fw-bold">👑 Admin Dashboard</span>
 <a href="/" class="btn btn-outline-light btn-sm">Logout</a>
 </div>
@@ -53,21 +70,21 @@ border-radius:30px;
 
 <div class="row mb-4">
 
-<div class="col-md-4">
+<div class="col-lg-4 col-md-6 col-12">
 <div class="card shadow stat-card">
 <h6>Total Players</h6>
 <h2 id="playerCount">0</h2>
 </div>
 </div>
 
-<div class="col-md-4">
+<div class="col-lg-4 col-md-6 col-12">
 <div class="card shadow stat-card">
 <h6>Total Teams</h6>
 <h2 id="teamCount">0</h2>
 </div>
 </div>
 
-<div class="col-md-4">
+<div class="col-lg-4 col-md-6 col-12">
 <div class="card shadow stat-card">
 <h6>Total Events</h6>
 <h2 id="eventCount">0</h2>
@@ -87,11 +104,11 @@ border-radius:30px;
 
 <div class="row">
 
-<div class="col-md-3">
+<div class="col-lg-3 col-md-6 col-12">
 <input class="form-control mb-2" id="eventName" placeholder="Event Name" required>
 </div>
 
-<div class="col-md-3">
+<div class="col-lg-3 col-md-6 col-12">
 <select class="form-control mb-2" id="eventType" required>
 <option value="">Select Type</option>
 <option value="Individual">Individual</option>
@@ -126,8 +143,8 @@ border-radius:30px;
 <div class="card shadow p-4 mb-4">
 
 <h4>📅 Events</h4>
-
-<table class="table table-striped mt-3">
+<div class="table-responsive">
+<table class="table table-striped">
 
 <thead>
 <tr>
@@ -151,8 +168,8 @@ border-radius:30px;
 <div class="card shadow p-4 mb-4">
 
 <h4>🎮 Players</h4>
-
-<table class="table table-striped mt-3">
+<div class="table-responsive">
+<table class="table table-striped">
 
 <thead>
 <tr>
@@ -176,8 +193,8 @@ border-radius:30px;
 <div class="card shadow p-4">
 
 <h4>🏆 Teams</h4>
-
-<table class="table table-striped mt-3">
+<div class="table-responsive">
+<table class="table table-striped">
 
 <thead>
 <tr>
