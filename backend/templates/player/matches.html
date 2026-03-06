@@ -35,9 +35,11 @@ background:rgba(255,255,255,0.95);
 
 <div class="container">
 
-<span class="navbar-brand fw-bold">🏆 Match Schedule</span>
+<span class="navbar-brand fw-bold">📅 Match Schedule</span>
 
-<a href="/player/register" class="btn btn-outline-light btn-sm">Back</a>
+<a href="/player/register" class="btn btn-outline-light btn-sm">
+Back
+</a>
 
 </div>
 
@@ -85,9 +87,9 @@ let rows=""
 
 matches.forEach(m=>{
 
-rows+=`
+rows += `
 <tr>
-<td>${m.event ?? "-"}</td>
+<td>${m.event || "-"}</td>
 <td>${m.team1}</td>
 <td>${m.team2}</td>
 <td>${m.date}</td>

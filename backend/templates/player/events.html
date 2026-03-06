@@ -1,9 +1,11 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
+
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Event Schedule</title>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
@@ -11,6 +13,7 @@
 
 body{
 background:linear-gradient(135deg,#eef2f3,#dfe9f3);
+min-height:100vh;
 }
 
 .navbar{
@@ -19,6 +22,7 @@ background:#000;
 
 .card{
 border-radius:15px;
+background:white;
 }
 
 </style>
@@ -34,30 +38,56 @@ border-radius:15px;
 🏆 Event Schedule
 </span>
 
-<a href="/" class="btn btn-outline-light btn-sm">
-Logout
+<a href="/player/register" class="btn btn-outline-light btn-sm">
+Back
 </a>
 
 </div>
 </nav>
 
+
 <div class="container mt-5">
 
-<div class="card shadow p-4">
+<!-- INDIVIDUAL EVENTS -->
 
-<h4 class="mb-3">All Events</h4>
+<div class="card shadow p-4 mb-4">
+
+<h4 class="mb-3">🧍 Individual Events</h4>
 
 <table class="table table-striped">
 
-<thead>
+<thead class="table-dark">
 <tr>
 <th>Event Name</th>
-<th>Type</th>
-<th>Status</th>
+<th>Date</th>
+<th>Location</th>
 </tr>
 </thead>
 
-<tbody id="eventTable"></tbody>
+<tbody id="individualTable"></tbody>
+
+</table>
+
+</div>
+
+
+<!-- TEAM EVENTS -->
+
+<div class="card shadow p-4">
+
+<h4 class="mb-3">👥 Team Events</h4>
+
+<table class="table table-striped">
+
+<thead class="table-dark">
+<tr>
+<th>Event Name</th>
+<th>Date</th>
+<th>Location</th>
+</tr>
+</thead>
+
+<tbody id="teamTable"></tbody>
 
 </table>
 
@@ -65,32 +95,52 @@ Logout
 
 </div>
 
+
 <script>
 
 async function loadEvents(){
 
-const res = await fetch("/player/api/events");
-const events = await res.json();
+const res = await fetch("/player/api/events")
 
-let rows="";
+const events = await res.json()
+
+let individualRows=""
+let teamRows=""
 
 events.forEach(e=>{
 
-rows+=`
+if(e.type === "Individual"){
+
+individualRows += `
 <tr>
 <td>${e.name}</td>
-<td>${e.type}</td>
-<td>${e.status}</td>
+<td>${e.date}</td>
+<td>${e.location}</td>
 </tr>
-`;
-
-});
-
-document.getElementById("eventTable").innerHTML=rows;
+`
 
 }
 
-loadEvents();
+if(e.type === "Team"){
+
+teamRows += `
+<tr>
+<td>${e.name}</td>
+<td>${e.date}</td>
+<td>${e.location}</td>
+</tr>
+`
+
+}
+
+})
+
+document.getElementById("individualTable").innerHTML = individualRows
+document.getElementById("teamTable").innerHTML = teamRows
+
+}
+
+loadEvents()
 
 </script>
 
