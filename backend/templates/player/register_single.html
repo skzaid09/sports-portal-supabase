@@ -62,7 +62,7 @@ padding:20px;
 
 <input class="form-control w-100 mb-2" id="roll_no" placeholder="Roll Number" required>
 
-<input class="form-control w-100 mb-2" id="sport" required>
+<select class="form-control w-100 mb-2" id="sport" required>
 <option value="">Select Sport</option>
 </select>
 
@@ -115,18 +115,25 @@ new bootstrap.Toast(toastEl).show()
 
 async function loadIndividualEvents(){
 
-const res=await fetch("/coord/api/events")
-const events=await res.json()
+try{
 
-let options="<option value=''>Select Sport</option>"
+const res = await fetch("/player/api/events")
+const events = await res.json()
+
+let options = "<option value=''>Select Sport</option>"
 
 events.forEach(e=>{
-if(e.type==="Individual"){
-options+=`<option value="${e.name}">${e.name}</option>`
+if(e.type && e.type.toLowerCase() === "individual"){
+options += `<option value="${e.name}">${e.name}</option>`
 }
 })
 
-document.getElementById("sport").innerHTML=options
+document.getElementById("sport").innerHTML = options
+
+}catch(err){
+console.log("Error loading events:", err)
+}
+
 }
 
 
@@ -150,15 +157,16 @@ headers:{"Content-Type":"application/json"},
 body:JSON.stringify(data)
 })
 
+const result = await res.json()
+
 loader.style.display="none"
 
-if(res.ok){
+if(result.success){
 showToast("Registration Successful")
 this.reset()
 }else{
 showToast("Registration Failed","danger")
 }
-
 })
 
 loadIndividualEvents()

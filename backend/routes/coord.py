@@ -1,4 +1,3 @@
-# update1
 from flask import Blueprint, render_template, session, redirect, request, jsonify
 import requests
 import os
