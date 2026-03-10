@@ -34,21 +34,8 @@ padding:25px;
 border-radius:30px;
 }
 
-@media (max-width:768px){
-
-h4{
-font-size:20px;
-}
-
-.card{
-padding:20px;
-}
-
-.navbar .container{
-padding-left:15px;
-padding-right:15px;
-}
-
+.btn-danger:hover{
+transform:scale(1.05);
 }
 
 </style>
@@ -104,11 +91,11 @@ padding-right:15px;
 
 <div class="row">
 
-<div class="col-lg-3 col-md-6 col-12">
+<div class="col-lg-3">
 <input class="form-control mb-2" id="eventName" placeholder="Event Name" required>
 </div>
 
-<div class="col-lg-3 col-md-6 col-12">
+<div class="col-lg-3">
 <select class="form-control mb-2" id="eventType" required>
 <option value="">Select Type</option>
 <option value="Individual">Individual</option>
@@ -116,11 +103,11 @@ padding-right:15px;
 </select>
 </div>
 
-<div class="col-md-3">
+<div class="col-lg-3">
 <input type="date" class="form-control mb-2" id="eventDate" required>
 </div>
 
-<div class="col-md-3">
+<div class="col-lg-3">
 <input class="form-control mb-2" id="eventLocation" placeholder="Location" required>
 </div>
 
@@ -143,6 +130,7 @@ padding-right:15px;
 <div class="card shadow p-4 mb-4">
 
 <h4>📅 Events</h4>
+
 <div class="table-responsive">
 <table class="table table-striped">
 
@@ -159,8 +147,8 @@ padding-right:15px;
 <tbody id="eventTable"></tbody>
 
 </table>
-
 </div>
+
 </div>
 
 
@@ -169,6 +157,7 @@ padding-right:15px;
 <div class="card shadow p-4 mb-4">
 
 <h4>🎮 Players</h4>
+
 <div class="table-responsive">
 <table class="table table-striped">
 
@@ -185,8 +174,8 @@ padding-right:15px;
 <tbody id="playerTable"></tbody>
 
 </table>
-
 </div>
+
 </div>
 
 
@@ -195,6 +184,7 @@ padding-right:15px;
 <div class="card shadow p-4">
 
 <h4>🏆 Teams</h4>
+
 <div class="table-responsive">
 <table class="table table-striped">
 
@@ -210,13 +200,14 @@ padding-right:15px;
 <tbody id="teamTable"></tbody>
 
 </table>
-
-</div>
-</div>
 </div>
 
+</div>
 
-<!-- TOAST MESSAGE -->
+</div>
+
+
+<!-- TOAST -->
 
 <div class="position-fixed bottom-0 end-0 p-3">
 
@@ -226,12 +217,39 @@ padding-right:15px;
 
 <div class="toast-body" id="toastMessage"></div>
 
-<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+<button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
 
 </div>
 
 </div>
 
+</div>
+
+
+<!-- DELETE CONFIRM MODAL -->
+
+<div class="modal fade" id="confirmModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+
+<div class="modal-content">
+
+<div class="modal-header bg-danger text-white">
+<h5 class="modal-title">Confirm Delete</h5>
+<button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body text-center">
+<p id="confirmText">Are you sure?</p>
+</div>
+
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+<button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+</div>
+
+</div>
+
+</div>
 </div>
 
 
@@ -251,6 +269,46 @@ new bootstrap.Toast(toastEl).show()
 
 }
 
+let deleteType=null
+let deleteId=null
+
+
+function openDeleteModal(type,id,text){
+
+deleteType=type
+deleteId=id
+
+document.getElementById("confirmText").innerText=text
+
+new bootstrap.Modal(document.getElementById("confirmModal")).show()
+
+}
+
+
+document.getElementById("confirmDeleteBtn").addEventListener("click",async ()=>{
+
+if(deleteType==="player"){
+await fetch("/admin/api/delete-player/"+deleteId,{method:"DELETE"})
+showToast("Player Deleted","danger")
+loadPlayers()
+}
+
+if(deleteType==="team"){
+await fetch("/admin/api/delete-team/"+deleteId,{method:"DELETE"})
+showToast("Team Deleted","danger")
+loadTeams()
+}
+
+if(deleteType==="event"){
+await fetch("/admin/api/delete-event/"+deleteId,{method:"DELETE"})
+showToast("Event Deleted","danger")
+loadEvents()
+}
+
+bootstrap.Modal.getInstance(document.getElementById("confirmModal")).hide()
+
+})
+
 
 async function loadPlayers(){
 
@@ -262,20 +320,23 @@ document.getElementById("playerCount").innerText=data.length
 let rows=""
 
 data.forEach(p=>{
-
 rows+=`
 <tr>
 <td>${p.name}</td>
 <td>${p.department}</td>
 <td>${p.roll_no}</td>
 <td>${p.sport}</td>
-<td><button class="btn btn-danger btn-sm" onclick="deletePlayer('${p.id}')">Delete</button></td>
+<td>
+<button class="btn btn-danger btn-sm"
+onclick="openDeleteModal('player','${p.id}','Delete this player?')">
+Delete
+</button>
+</td>
 </tr>
 `
-
 })
 
-document.getElementById("playerTable").innerHTML=rows
+playerTable.innerHTML=rows
 
 }
 
@@ -290,19 +351,22 @@ document.getElementById("teamCount").innerText=data.length
 let rows=""
 
 data.forEach(t=>{
-
 rows+=`
 <tr>
 <td>${t.team_name}</td>
 <td>${t.department}</td>
 <td>${t.sport}</td>
-<td><button class="btn btn-danger btn-sm" onclick="deleteTeam('${t.id}')">Delete</button></td>
+<td>
+<button class="btn btn-danger btn-sm"
+onclick="openDeleteModal('team','${t.id}','Delete this team?')">
+Delete
+</button>
+</td>
 </tr>
 `
-
 })
 
-document.getElementById("teamTable").innerHTML=rows
+teamTable.innerHTML=rows
 
 }
 
@@ -317,20 +381,23 @@ document.getElementById("eventCount").innerText=data.length
 let rows=""
 
 data.forEach(e=>{
-
 rows+=`
 <tr>
 <td>${e.name}</td>
 <td>${e.type}</td>
 <td>${e.date}</td>
 <td>${e.location}</td>
-<td><button class="btn btn-danger btn-sm" onclick="deleteEvent('${e.id}')">Delete</button></td>
+<td>
+<button class="btn btn-danger btn-sm"
+onclick="openDeleteModal('event','${e.id}','Delete this event?')">
+Delete
+</button>
+</td>
 </tr>
 `
-
 })
 
-document.getElementById("eventTable").innerHTML=rows
+eventTable.innerHTML=rows
 
 }
 
@@ -360,59 +427,15 @@ loader.style.display="none"
 const result=await res.json()
 
 if(result.success){
-
 showToast("Event Created Successfully 🎉")
-
 this.reset()
-
 loadEvents()
-
-}else{
-
+}
+else{
 showToast("Error Creating Event","danger")
-
 }
 
 })
-
-
-async function deletePlayer(id){
-
-if(!confirm("Delete this player?")) return
-
-await fetch("/admin/api/delete-player/"+id,{method:"DELETE"})
-
-showToast("Player Deleted","danger")
-
-loadPlayers()
-
-}
-
-
-async function deleteTeam(id){
-
-if(!confirm("Delete this team?")) return
-
-await fetch("/admin/api/delete-team/"+id,{method:"DELETE"})
-
-showToast("Team Deleted","danger")
-
-loadTeams()
-
-}
-
-
-async function deleteEvent(id){
-
-if(!confirm("Delete this event?")) return
-
-await fetch("/admin/api/delete-event/"+id,{method:"DELETE"})
-
-showToast("Event Deleted","danger")
-
-loadEvents()
-
-}
 
 loadPlayers()
 loadTeams()
