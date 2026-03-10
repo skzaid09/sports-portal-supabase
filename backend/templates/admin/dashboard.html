@@ -161,6 +161,7 @@ padding-right:15px;
 </table>
 
 </div>
+</div>
 
 
 <!-- PLAYERS -->
@@ -186,6 +187,7 @@ padding-right:15px;
 </table>
 
 </div>
+</div>
 
 
 <!-- TEAMS -->
@@ -210,7 +212,7 @@ padding-right:15px;
 </table>
 
 </div>
-
+</div>
 </div>
 
 
@@ -376,6 +378,8 @@ showToast("Error Creating Event","danger")
 
 async function deletePlayer(id){
 
+if(!confirm("Delete this player?")) return
+
 await fetch("/admin/api/delete-player/"+id,{method:"DELETE"})
 
 showToast("Player Deleted","danger")
@@ -386,6 +390,8 @@ loadPlayers()
 
 
 async function deleteTeam(id){
+
+if(!confirm("Delete this team?")) return
 
 await fetch("/admin/api/delete-team/"+id,{method:"DELETE"})
 
@@ -398,6 +404,8 @@ loadTeams()
 
 async function deleteEvent(id){
 
+if(!confirm("Delete this event?")) return
+
 await fetch("/admin/api/delete-event/"+id,{method:"DELETE"})
 
 showToast("Event Deleted","danger")
@@ -405,7 +413,6 @@ showToast("Event Deleted","danger")
 loadEvents()
 
 }
-
 
 loadPlayers()
 loadTeams()

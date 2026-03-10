@@ -40,19 +40,38 @@ def register_team():
 
 
 # ======================
-# SINGLE PLAYER
+# SINGLE PLAYER REGISTRATION
 # ======================
 
 @player_bp.route("/api/register-single", methods=["POST"])
 def api_single():
+
     try:
+
         data = request.get_json()
 
+        roll_no = data.get("roll_no")
+
+        # 🔍 CHECK DUPLICATE ROLL NUMBER
+        check_res = requests.get(
+            f"{SUPABASE_URL}/rest/v1/players?roll_no=eq.{roll_no}&select=roll_no",
+            headers=HEADERS
+        )
+
+        if check_res.status_code == 200 and len(check_res.json()) > 0:
+
+            return jsonify({
+                "success": False,
+                "message": "Roll Number already registered"
+            })
+
+
+        # INSERT PLAYER
         payload = {
-            "name": data["name"],
-            "department": data["department"],
-            "roll_no": data["roll_no"],
-            "sport": data["sport"],
+            "name": data.get("name"),
+            "department": data.get("department"),
+            "roll_no": roll_no,
+            "sport": data.get("sport"),
             "type": "single"
         }
 
@@ -63,13 +82,30 @@ def api_single():
         )
 
         if res.status_code in [200, 201]:
-            return jsonify({"success": True})
+
+            return jsonify({
+                "success": True,
+                "message": "Player registered successfully"
+            })
+
         else:
-            return jsonify({"success": False, "error": res.text})
+
+            print("Insert error:", res.text)
+
+            return jsonify({
+                "success": False,
+                "message": "Database error"
+            })
+
 
     except Exception as e:
+
         print("Single player error:", e)
-        return jsonify({"success": False})
+
+        return jsonify({
+            "success": False,
+            "message": "Server error"
+        })
 
 
 # ======================
@@ -78,10 +114,12 @@ def api_single():
 
 @player_bp.route("/api/register-team", methods=["POST"])
 def register_team_api():
+
     try:
+
         data = request.get_json()
 
-        # create team
+        # CREATE TEAM
         team_payload = {
             "team_name": data["team_name"],
             "department": data["department"],
@@ -95,8 +133,11 @@ def register_team_api():
         )
 
         if team_res.status_code not in [200, 201]:
+
             print("Team insert error:", team_res.text)
+
             return jsonify({"success": False})
+
 
         team_data = team_res.json()
 
@@ -105,7 +146,8 @@ def register_team_api():
 
         team_id = team_data[0]["id"]
 
-        # insert players
+
+        # INSERT TEAM PLAYERS
         for p in data["players"]:
 
             player_payload = {
@@ -125,23 +167,23 @@ def register_team_api():
 
         return jsonify({"success": True})
 
-    except Exception as e:
-        print("Team error:", e)
-        return jsonify({"success": False})
 
+    except Exception as e:
+
+        print("Team error:", e)
+
+        return jsonify({"success": False})
 
 
 # ======================
 # VIEW EVENTS
 # ======================
 
-# show events page
 @player_bp.route("/events")
 def player_events():
     return render_template("player/events.html")
 
 
-# fetch events API
 @player_bp.route("/api/events")
 def api_events():
 
@@ -154,6 +196,7 @@ def api_events():
         return jsonify(res.json())
     else:
         return jsonify([])
+
 
 # ======================
 # MATCH SCHEDULE PAGE

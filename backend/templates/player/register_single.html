@@ -63,7 +63,7 @@ padding:20px;
 <input class="form-control w-100 mb-2" id="roll_no" placeholder="Roll Number" required>
 
 <select class="form-control w-100 mb-2" id="sport" required>
-<option value="">Select Sport</option>
+<option value="">Loading Sports...</option>
 </select>
 
 <div id="loader" class="text-center mb-3" style="display:none;">
@@ -83,7 +83,6 @@ padding:20px;
 
 </div>
 
-
 <div class="position-fixed bottom-0 end-0 p-3">
 
 <div id="liveToast" class="toast text-bg-success border-0">
@@ -99,7 +98,6 @@ padding:20px;
 </div>
 
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -123,18 +121,24 @@ const events = await res.json()
 let options = "<option value=''>Select Sport</option>"
 
 events.forEach(e=>{
+
 if(e.type && e.type.toLowerCase() === "individual"){
 options += `<option value="${e.name}">${e.name}</option>`
 }
+
 })
 
 document.getElementById("sport").innerHTML = options
 
 }catch(err){
+
 console.log("Error loading events:", err)
+showToast("Unable to load sports","danger")
+
 }
 
 }
+
 
 
 document.getElementById("paymentForm").addEventListener("submit",async function(e){
@@ -144,30 +148,69 @@ e.preventDefault()
 const loader=document.getElementById("loader")
 loader.style.display="block"
 
+
 const data={
-name:name.value,
-department:department.value,
-roll_no:roll_no.value,
-sport:sport.value
+
+name: document.getElementById("name").value,
+department: document.getElementById("department").value,
+roll_no: document.getElementById("roll_no").value,
+sport: document.getElementById("sport").value
+
 }
 
+
+if(!data.sport){
+
+loader.style.display="none"
+showToast("Please select a sport","danger")
+return
+
+}
+
+
+try{
+
 const res=await fetch("/player/api/register-single",{
+
 method:"POST",
 headers:{"Content-Type":"application/json"},
 body:JSON.stringify(data)
+
 })
+
 
 const result = await res.json()
 
 loader.style.display="none"
 
+
 if(result.success){
+
 showToast("Registration Successful")
+
 this.reset()
+
+setTimeout(()=>{
+window.location="/player/register"
+},1200)
+
 }else{
+
 showToast("Registration Failed","danger")
+
 }
+
+
+}catch(err){
+
+loader.style.display="none"
+console.log(err)
+showToast("Server Error","danger")
+
+}
+
 })
+
 
 loadIndividualEvents()
 

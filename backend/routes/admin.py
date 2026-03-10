@@ -123,6 +123,13 @@ def delete_player(id):
 @admin_bp.route("/api/delete-team/<id>", methods=["DELETE"])
 def delete_team(id):
 
+    # delete players of the team first
+    requests.delete(
+        f"{SUPABASE_URL}/rest/v1/team_players?team_id=eq.{id}",
+        headers=HEADERS
+    )
+
+    # delete team
     requests.delete(
         f"{SUPABASE_URL}/rest/v1/teams?id=eq.{id}",
         headers=HEADERS
