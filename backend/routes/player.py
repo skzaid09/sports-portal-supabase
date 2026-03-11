@@ -200,14 +200,20 @@ def register_team_api():
             if res.status_code not in [200, 201]:
                 print("Player insert error:", res.text)
 
-        return jsonify({"success": True})
+        return jsonify({
+            "success": True,
+            "message": "Team registered successfully"
+            })
 
 
     except Exception as e:
 
         print("Team error:", e)
 
-        return jsonify({"success": False})
+        return jsonify({
+            "success": False,
+            "message": "Team registration failed"
+            })
 
 
 # ======================

@@ -167,12 +167,21 @@ const loader=document.getElementById("loader")
 const players=[]
 
 document.querySelectorAll("#players-container .row").forEach(row=>{
+
 const inputs=row.querySelectorAll("input")
 
+const name=inputs[0].value.trim()
+const roll=inputs[1].value.trim()
+
+if(name && roll){
+
 players.push({
-name:inputs[0].value,
-roll_no:inputs[1].value
+name:name,
+roll_no:roll
 })
+
+}
+
 })
 
 const data={
@@ -200,13 +209,12 @@ if(result.success){
 
 showToast("🎉 Team Registered Successfully!")
 
-setTimeout(()=>{
-window.location.href="/roles"
-},1500)
+document.getElementById("teamForm").reset()
+document.getElementById("players-container").innerHTML=""
 
 }else{
 
-showToast("Registration Failed","danger")
+showToast(result.message || "Registration Failed","danger")
 
 }
 
