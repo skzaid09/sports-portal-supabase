@@ -152,7 +152,29 @@ def register_team_api():
             })
 
         team_id = team_data[0]["id"]
-        
+
+        # ======================
+        # INSERT TEAM PLAYERS
+        # ======================
+
+        players = data.get("players", [])
+
+        for p in players:
+
+            player_payload = {
+                "team_id": team_id,
+                "name": p["name"],
+                "roll_no": p["roll_no"]
+            }
+
+            res = requests.post(
+                f"{SUPABASE_URL}/rest/v1/team_players",
+                json=player_payload,
+                headers=HEADERS
+            )
+
+            if res.status_code not in [200,201]:
+                print("Player insert error:", res.text)
 
         return jsonify({
             "success": True,
