@@ -469,6 +469,72 @@ leaderboardTable.innerHTML=rows
 
 }
 
+async function deleteEvent(id){
+
+if(!confirm("⚠️ Are you sure you want to delete this event?"))
+return
+
+try{
+
+const res = await fetch("/admin/api/delete-event/"+id,{
+method:"DELETE"
+})
+
+const result = await res.json()
+
+if(result.success){
+
+showToast("Event deleted successfully","danger")
+
+loadEvents()
+
+}else{
+
+showToast("Delete failed","danger")
+
+}
+
+}catch(err){
+
+showToast("Server error","danger")
+
+}
+
+}
+
+async function deletePlayer(id){
+
+if(!confirm("⚠️ Are you sure you want to delete this player?"))
+return
+
+try{
+
+const res = await fetch("/admin/api/delete-player/"+id,{
+method:"DELETE"
+})
+
+const result = await res.json()
+
+if(result.success){
+
+showToast("Player deleted successfully","danger")
+
+loadAnalytics()
+loadLeaderboard()
+
+}else{
+
+showToast("Delete failed","danger")
+
+}
+
+}catch(err){
+
+showToast("Server error","danger")
+
+}
+
+}
 
 loadPlayers()
 loadTeams()

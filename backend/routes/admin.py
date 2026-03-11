@@ -109,8 +109,15 @@ def create_event():
 @admin_bp.route("/api/delete-player/<id>", methods=["DELETE"])
 def delete_player(id):
 
+    # delete individual player
     requests.delete(
         f"{SUPABASE_URL}/rest/v1/players?id=eq.{id}",
+        headers=HEADERS
+    )
+
+    # delete team player
+    requests.delete(
+        f"{SUPABASE_URL}/rest/v1/team_players?id=eq.{id}",
         headers=HEADERS
     )
 
