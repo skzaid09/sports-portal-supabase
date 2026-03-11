@@ -152,50 +152,7 @@ def register_team_api():
             })
 
         team_id = team_data[0]["id"]
-
-
-        # ======================
-        # INSERT TEAM PLAYERS
-        # ======================
-
-        for p in data["players"]:
-
-            # Insert into team_players table
-            team_player_payload = {
-                "team_id": team_id,
-                "name": p["name"],
-                "roll_no": p["roll_no"]
-            }
-
-            team_player_res = requests.post(
-                f"{SUPABASE_URL}/rest/v1/team_players",
-                json=team_player_payload,
-                headers=HEADERS
-            )
-
-            if team_player_res.status_code not in [200,201]:
-                print("Team player insert error:", team_player_res.text)
-
-
-            # ALSO insert into players table (for analytics dashboard)
-            player_payload = {
-                "name": p["name"],
-                "school": data["school"],
-                "gender": "Team",
-                "roll_no": p["roll_no"],
-                "sport": data["sport"],
-                "type": "team"
-            }
-
-            player_res = requests.post(
-                f"{SUPABASE_URL}/rest/v1/players",
-                json=player_payload,
-                headers=HEADERS
-            )
-
-            if player_res.status_code not in [200,201]:
-                print("Analytics insert error:", player_res.text)
-
+        
 
         return jsonify({
             "success": True,
