@@ -69,7 +69,8 @@ def api_single():
         # INSERT PLAYER
         payload = {
             "name": data.get("name"),
-            "department": data.get("department"),
+            "school": data.get("school"),
+            "gender": data.get("gender"),
             "roll_no": roll_no,
             "sport": data.get("sport"),
             "type": "single"
@@ -122,9 +123,10 @@ def register_team_api():
         # CREATE TEAM
         team_payload = {
             "team_name": data["team_name"],
-            "department": data["department"],
+            "school": data["school"],
             "sport": data["sport"]
         }
+
 
         team_res = requests.post(
             f"{SUPABASE_URL}/rest/v1/teams",
@@ -150,14 +152,47 @@ def register_team_api():
         # INSERT TEAM PLAYERS
         for p in data["players"]:
 
-            player_payload = {
+            team_player_payload = {
                 "team_id": team_id,
                 "name": p["name"],
                 "roll_no": p["roll_no"]
             }
 
-            res = requests.post(
+            requests.post(
                 f"{SUPABASE_URL}/rest/v1/team_players",
+                json=team_player_payload,
+                headers=HEADERS
+    )
+
+
+            # ALSO insert into players table for analytics
+            player_payload = {
+                "name": p["name"],
+                "school": data["school"],
+                "gender": "Team",
+                "roll_no": p["roll_no"],
+                "sport": data["sport"],
+                "type": "team"
+            }
+
+            requests.post(
+                f"{SUPABASE_URL}/rest/v1/players",
+                json=player_payload,
+                headers=HEADERS
+            )
+
+             # ALSO insert into players table for analytics
+            player_payload = {
+                "name": p["name"],
+                "school": data["school"],
+                "gender": "Team",   # mark as team member
+                "roll_no": p["roll_no"],
+                "sport": data["sport"],
+                "type": "team"
+            }
+
+            requests.post(
+                f"{SUPABASE_URL}/rest/v1/players",
                 json=player_payload,
                 headers=HEADERS
             )

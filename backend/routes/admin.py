@@ -150,3 +150,39 @@ def delete_event(id):
     )
 
     return jsonify({"success": True})
+
+# ======================
+# EVENT ANALYTICS
+# ======================
+@admin_bp.route("/api/event-analytics")
+def event_analytics():
+
+    # get events
+    events_res = requests.get(
+        f"{SUPABASE_URL}/rest/v1/events?select=*",
+        headers=HEADERS
+    )
+
+    # get players
+    players_res = requests.get(
+        f"{SUPABASE_URL}/rest/v1/players?select=*",
+        headers=HEADERS
+    )
+
+    events = events_res.json()
+    players = players_res.json()
+
+    result = []
+
+    for event in events:
+
+        event_players = [
+            p for p in players if p.get("sport","").lower() == event["name"].lower()
+        ]
+
+        result.append({
+            "event": event["name"],
+            "players": event_players
+        })
+
+    return jsonify(result)

@@ -55,7 +55,12 @@ padding:20px;
 
 <input type="text" class="form-control mb-3" id="team_name" placeholder="Team Name" required>
 
-<input type="text" class="form-control mb-3" id="department" placeholder="Department" required>
+<select class="form-select mb-3" id="school" required>
+<option value="">Select School</option>
+<option value="School of Engineering">School of Engineering</option>
+<option value="School of Pharmacy">School of Pharmacy</option>
+<option value="School of Architecture">School of Architecture</option>
+</select>
 
 <select class="form-select mb-3" id="sport" required>
 <option value="">Select Sport</option>
@@ -172,7 +177,7 @@ roll_no:inputs[1].value
 
 const data={
 team_name:document.getElementById("team_name").value,
-department:document.getElementById("department").value,
+school:document.getElementById("school").value,
 sport:document.getElementById("sport").value,
 players:players
 }
