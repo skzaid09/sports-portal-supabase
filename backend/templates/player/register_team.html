@@ -210,7 +210,16 @@ if(result.success){
 showToast("🎉 Team Registered Successfully!")
 
 document.getElementById("teamForm").reset()
-document.getElementById("players-container").innerHTML=""
+document.getElementById("players-container").innerHTML = `
+<div class="row g-2 mb-2">
+<div class="col-md-6">
+<input class="form-control w-100 mb-2" placeholder="Player Name" required>
+</div>
+<div class="col-md-6">
+<input class="form-control w-100 mb-2" placeholder="Roll No" required>
+</div>
+</div>
+`
 
 }else{
 
