@@ -379,15 +379,26 @@ if(players.length===0){
 return "<tr><td colspan='4'>No registrations</td></tr>"
 }
 
-let r=""
+let grouped={}
 
 players.forEach(p=>{
+if(!grouped[p.team_name]) grouped[p.team_name]=[]
+grouped[p.team_name].push(p)
+})
 
-r+=`
+let html=""
+
+Object.keys(grouped).forEach(team=>{
+
+grouped[team].sort((a,b)=>a.roll_no.localeCompare(b.roll_no))
+
+grouped[team].forEach(p=>{
+
+html+=`
 <tr>
 <td>${p.name}</td>
 <td>${p.roll_no}</td>
-<td>${p.team_name || "-"}</td>
+<td>${team}</td>
 <td>
 <button class="btn btn-sm btn-danger"
 onclick="deletePlayer('${p.id}')">
@@ -399,11 +410,12 @@ Delete
 
 })
 
-return r
+html+=`<tr><td colspan="4"></td></tr>`
 
+})
+
+return html
 }
-
-return `
 
 <div class="card shadow p-4 mb-4">
 

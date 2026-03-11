@@ -157,31 +157,67 @@ def delete_event(id):
 @admin_bp.route("/api/event-analytics")
 def event_analytics():
 
-    # get events
-    events_res = requests.get(
+    # events
+    events = requests.get(
         f"{SUPABASE_URL}/rest/v1/events?select=*",
         headers=HEADERS
-    )
+    ).json()
 
-    # get players
-    players_res = requests.get(
+    # individual players
+    players = requests.get(
         f"{SUPABASE_URL}/rest/v1/players?select=*",
         headers=HEADERS
-    )
+    ).json()
 
-    events = events_res.json()
-    players = players_res.json()
+    # teams
+    teams = requests.get(
+        f"{SUPABASE_URL}/rest/v1/teams?select=*",
+        headers=HEADERS
+    ).json()
+
+    # team players
+    team_players = requests.get(
+        f"{SUPABASE_URL}/rest/v1/team_players?select=*",
+        headers=HEADERS
+    ).json()
 
     result = []
 
     for event in events:
 
-        event_players = [
-            p for p in players if p.get("sport","").lower() == event["name"].lower()
-        ]
+        event_players = []
+
+        # individual players
+        for p in players:
+            if p.get("sport","").lower() == event["name"].lower():
+
+                event_players.append({
+                    "id": p["id"],
+                    "name": p["name"],
+                    "roll_no": p["roll_no"],
+                    "school": p["school"],
+                    "team_name": "Individual"
+                })
+
+        # team players
+        for tp in team_players:
+
+            team = next((t for t in teams if t["id"] == tp["team_id"]), None)
+
+            if team and team["sport"].lower() == event["name"].lower():
+
+                event_players.append({
+                    "id": tp["id"],
+                    "name": tp["name"],
+                    "roll_no": tp["roll_no"],
+                    "school": team["school"],
+                    "team_name": team["team_name"]
+                })
 
         result.append({
             "event": event["name"],
+            "type": event["type"],
+            "date": event["date"],
             "players": event_players
         })
 
