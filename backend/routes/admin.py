@@ -196,20 +196,27 @@ def event_analytics():
                     "name": p["name"],
                     "roll_no": p["roll_no"],
                     "school": p["school"],
-                    "team_name": "Individual"
+                    "gender": p.get("gender",""),
+                    "team_name": "None"
                 })
 
         # team players
-        for tp in team_players:
+        # team players
+        for team in teams:
 
-            team = next((t for t in teams if t["id"] == tp["team_id"]), None)
+            if team["sport"].lower() != event["name"].lower():
+                continue
 
-            if team and team["sport"].lower() == event["name"].lower():
+            team_id = team["id"]
+
+            members = [tp for tp in team_players if tp["team_id"] == team_id]
+
+            for m in members:
 
                 event_players.append({
-                    "id": tp["id"],
-                    "name": tp["name"],
-                    "roll_no": tp["roll_no"],
+                    "id": m["id"],
+                    "name": m["name"],
+                    "roll_no": m["roll_no"],
                     "school": team["school"],
                     "team_name": team["team_name"]
                 })

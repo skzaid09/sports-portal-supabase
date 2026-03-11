@@ -327,7 +327,7 @@ html+=`
 <tr>
 <td>${p.name}</td>
 <td>${p.roll_no}</td>
-<td>${team}</td>
+<td>${event.type === "Individual" ? p.gender : team}</td>
 <td>
 <button class="btn btn-sm btn-danger"
 onclick="deletePlayer('${p.id}')">
@@ -363,7 +363,7 @@ return `
 <tr>
 <th>Name</th>
 <th>Roll</th>
-<th>Team</th>
+<th>${event.type === "Individual" ? "Gender" : "Team"}</th>
 <th></th>
 </tr>
 </thead>
