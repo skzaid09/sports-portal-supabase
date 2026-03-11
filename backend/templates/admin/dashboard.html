@@ -1,5 +1,3 @@
-<!-- FULL UPDATED ADMIN DASHBOARD -->
-
 <!DOCTYPE html>
 <html>
 
@@ -32,13 +30,12 @@ text-align:center;
 padding:25px;
 }
 
-.event-card{
-border-left:6px solid #0d6efd;
+.btn-dark{
+border-radius:30px;
 }
 
-.school-title{
-font-weight:600;
-margin-bottom:8px;
+.btn-danger:hover{
+transform:scale(1.05);
 }
 
 </style>
@@ -60,21 +57,21 @@ margin-bottom:8px;
 
 <div class="row mb-4">
 
-<div class="col-lg-4">
+<div class="col-lg-4 col-md-6 col-12">
 <div class="card shadow stat-card">
 <h6>Total Players</h6>
 <h2 id="playerCount">0</h2>
 </div>
 </div>
 
-<div class="col-lg-4">
+<div class="col-lg-4 col-md-6 col-12">
 <div class="card shadow stat-card">
 <h6>Total Teams</h6>
 <h2 id="teamCount">0</h2>
 </div>
 </div>
 
-<div class="col-lg-4">
+<div class="col-lg-4 col-md-6 col-12">
 <div class="card shadow stat-card">
 <h6>Total Events</h6>
 <h2 id="eventCount">0</h2>
@@ -94,11 +91,11 @@ margin-bottom:8px;
 
 <div class="row">
 
-<div class="col-md-3">
+<div class="col-lg-3">
 <input class="form-control mb-2" id="eventName" placeholder="Event Name" required>
 </div>
 
-<div class="col-md-3">
+<div class="col-lg-3">
 <select class="form-control mb-2" id="eventType" required>
 <option value="">Select Type</option>
 <option value="Individual">Individual</option>
@@ -106,14 +103,19 @@ margin-bottom:8px;
 </select>
 </div>
 
-<div class="col-md-3">
+<div class="col-lg-3">
 <input type="date" class="form-control mb-2" id="eventDate" required>
 </div>
 
-<div class="col-md-3">
+<div class="col-lg-3">
 <input class="form-control mb-2" id="eventLocation" placeholder="Location" required>
 </div>
 
+</div>
+
+<div id="loader" class="text-center mb-3" style="display:none;">
+<div class="spinner-border text-primary"></div>
+<p class="mt-2">Creating Event...</p>
 </div>
 
 <button class="btn btn-dark w-100 mt-2">Create Event</button>
@@ -123,12 +125,13 @@ margin-bottom:8px;
 </div>
 
 
-<!-- EVENTS TABLE -->
+<!-- EVENTS -->
 
-<div class="card shadow p-4 mb-5">
+<div class="card shadow p-4 mb-4">
 
 <h4>📅 Events</h4>
 
+<div class="table-responsive">
 <table class="table table-striped">
 
 <thead>
@@ -144,15 +147,137 @@ margin-bottom:8px;
 <tbody id="eventTable"></tbody>
 
 </table>
-
 </div>
 
 </div>
 
 
-<!-- ANALYTICS -->
+<!-- PLAYERS -->
+
+<div class="card shadow p-4 mb-4">
+
+<h4>🎮 Players</h4>
+
+<div class="table-responsive">
+<table class="table table-striped">
+
+<thead>
+<tr>
+<th>Name</th>
+<th>School</th>
+<th>Roll</th>
+<th>Sport</th>
+<th>Gender</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="playerTable"></tbody>
+
+</table>
+</div>
+
+</div>
+
+
+<!-- TEAMS -->
+
+<div class="card shadow p-4">
+
+<h4>🏆 Teams</h4>
+
+<div class="table-responsive">
+<table class="table table-striped">
+
+<thead>
+<tr>
+<th>Team</th>
+<th>School</th>
+<th>Sport</th>
+<th>Action</th>
+</tr>
+</thead>
+
+<tbody id="teamTable"></tbody>
+
+</table>
+</div>
+
+</div>
+
+</div>
+
+
+<!-- TOAST -->
+
+<div class="position-fixed bottom-0 end-0 p-3">
+
+<div id="liveToast" class="toast text-bg-success border-0">
+
+<div class="d-flex">
+
+<div class="toast-body" id="toastMessage"></div>
+
+<button class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+
+</div>
+
+</div>
+
+</div>
+
+
+<!-- DELETE CONFIRM MODAL -->
+
+<div class="modal fade" id="confirmModal" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+
+<div class="modal-content">
+
+<div class="modal-header bg-danger text-white">
+<h5 class="modal-title">Confirm Delete</h5>
+<button class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+</div>
+
+<div class="modal-body text-center">
+<p id="confirmText">Are you sure?</p>
+</div>
+
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+<button class="btn btn-danger" id="confirmDeleteBtn">Delete</button>
+</div>
+
+</div>
+
+</div>
+</div>
+
+<!-- EVENT ANALYTICS DASHBOARD -->
 
 <div class="container mb-5">
+
+<!-- SCHOOL LEADERBOARD -->
+
+<div class="card shadow p-4 mb-4">
+
+<h4 class="mb-3">🏆 School Leaderboard</h4>
+
+<table class="table table-striped">
+
+<thead>
+<tr>
+<th>Rank</th>
+<th>School</th>
+<th>Total Participants</th>
+</tr>
+</thead>
+
+<tbody id="leaderboardTable"></tbody>
+
+</table>
+
+</div>
 
 <h3 class="mb-4">📊 Event Analytics</h3>
 
@@ -160,41 +285,135 @@ margin-bottom:8px;
 
 </div>
 
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
 
 function showToast(message,type="success"){
-const toast=document.createElement("div")
-toast.className="toast show position-fixed bottom-0 end-0 m-3 text-bg-"+type
-toast.innerHTML=`<div class="toast-body">${message}</div>`
-document.body.appendChild(toast)
-setTimeout(()=>toast.remove(),3000)
+
+const toastEl=document.getElementById("liveToast")
+
+toastEl.className="toast text-bg-"+type+" border-0"
+
+document.getElementById("toastMessage").innerText=message
+
+new bootstrap.Toast(toastEl).show()
+
+}
+
+let deleteType=null
+let deleteId=null
+
+
+function openDeleteModal(type,id,text){
+
+deleteType=type
+deleteId=id
+
+document.getElementById("confirmText").innerText=text
+
+new bootstrap.Modal(document.getElementById("confirmModal")).show()
+
+}
+
+
+document.getElementById("confirmDeleteBtn").addEventListener("click",async ()=>{
+
+if(deleteType==="player"){
+await fetch("/admin/api/delete-player/"+deleteId,{method:"DELETE"})
+showToast("Player Deleted","danger")
+loadPlayers()
+}
+
+if(deleteType==="team"){
+await fetch("/admin/api/delete-team/"+deleteId,{method:"DELETE"})
+showToast("Team Deleted","danger")
+loadTeams()
+}
+
+if(deleteType==="event"){
+await fetch("/admin/api/delete-event/"+deleteId,{method:"DELETE"})
+showToast("Event Deleted","danger")
+loadEvents()
+}
+
+bootstrap.Modal.getInstance(document.getElementById("confirmModal")).hide()
+
+})
+
+
+async function loadPlayers(){
+
+const res = await fetch("/admin/api/players")
+const data = await res.json()
+
+document.getElementById("playerCount").innerText=data.length
+
+let rows=""
+
+data.forEach(p=>{
+rows+=`
+<tr>
+<td>${p.name}</td>
+<td>${p.school}</td>
+<td>${p.gender}</td>
+<td>${p.roll_no}</td>
+<td>${p.sport}</td>
+<td>
+<button class="btn btn-danger btn-sm"
+onclick="openDeleteModal('player','${p.id}','Delete this player?')">
+Delete
+</button>
+</td>
+</tr>
+`
+})
+
+playerTable.innerHTML=rows
+
+}
+
+
+async function loadTeams(){
+
+const res = await fetch("/admin/api/teams")
+const data = await res.json()
+
+document.getElementById("teamCount").innerText=data.length
+
+let rows=""
+
+data.forEach(t=>{
+rows+=`
+<tr>
+<td>${t.team_name}</td>
+<td>${t.school}</td>
+<td>${t.sport}</td>
+<td>
+<button class="btn btn-danger btn-sm"
+onclick="openDeleteModal('team','${t.id}','Delete this team?')">
+Delete
+</button>
+</td>
+</tr>
+`
+})
+
+teamTable.innerHTML=rows
+
 }
 
 
 async function loadEvents(){
 
 const res = await fetch("/admin/api/events")
-let data = await res.json()
+const data = await res.json()
 
 document.getElementById("eventCount").innerText=data.length
-
-// SORT EVENTS
-data.sort((a,b)=>{
-
-if(a.type==="Individual" && b.type==="Team") return -1
-if(a.type==="Team" && b.type==="Individual") return 1
-
-return new Date(a.date)-new Date(b.date)
-
-})
 
 let rows=""
 
 data.forEach(e=>{
-
 rows+=`
 <tr>
 <td>${e.name}</td>
@@ -203,13 +422,12 @@ rows+=`
 <td>${e.location}</td>
 <td>
 <button class="btn btn-danger btn-sm"
-onclick="deleteEvent('${e.id}')">
+onclick="openDeleteModal('event','${e.id}','Delete this event?')">
 Delete
 </button>
 </td>
 </tr>
 `
-
 })
 
 eventTable.innerHTML=rows
@@ -217,22 +435,12 @@ eventTable.innerHTML=rows
 }
 
 
-async function deleteEvent(id){
-
-if(!confirm("Delete this event?")) return
-
-await fetch("/admin/api/delete-event/"+id,{method:"DELETE"})
-
-showToast("Event Deleted","danger")
-
-loadEvents()
-
-}
-
-
 document.getElementById("eventForm").addEventListener("submit",async function(e){
 
 e.preventDefault()
+
+const loader=document.getElementById("loader")
+loader.style.display="block"
 
 const data={
 name:eventName.value,
@@ -247,138 +455,167 @@ headers:{"Content-Type":"application/json"},
 body:JSON.stringify(data)
 })
 
+loader.style.display="none"
+
 const result=await res.json()
 
 if(result.success){
-
-showToast("Event Created 🎉")
-
+showToast("Event Created Successfully 🎉")
 this.reset()
-
 loadEvents()
-loadAnalytics()
-
-}else{
-
-showToast("Error","danger")
-
+}
+else{
+showToast("Error Creating Event","danger")
 }
 
 })
-
-
 
 async function loadAnalytics(){
 
 const res = await fetch("/admin/api/event-analytics")
+let data = await res.json()
 
-const events = await res.json()
+// separate events
+let individualEvents = []
+let teamEvents = []
 
-let individual=[]
-let team=[]
-
-events.forEach(e=>{
-if(e.type==="Individual") individual.push(e)
-else team.push(e)
+data.forEach(e=>{
+if(e.type === "Individual") individualEvents.push(e)
+else teamEvents.push(e)
 })
 
-individual.sort((a,b)=>new Date(a.date)-new Date(b.date))
-team.sort((a,b)=>new Date(a.date)-new Date(b.date))
+// sort by date
+individualEvents.sort((a,b)=> new Date(a.date) - new Date(b.date))
+teamEvents.sort((a,b)=> new Date(a.date) - new Date(b.date))
 
-let html=""
+let html = ""
 
-html+="<h4 class='mb-3'>Individual Events</h4>"
+// ======================
+// INDIVIDUAL EVENTS
+// ======================
 
-individual.forEach(e=>{
-html+=createEventCard(e)
+html += "<h4 class='mb-3'>Individual Events</h4>"
+
+individualEvents.forEach(event=>{
+html += renderEventCard(event)
 })
 
-html+="<h4 class='mt-5 mb-3'>Team Events</h4>"
+// ======================
+// TEAM EVENTS
+// ======================
 
-team.forEach(e=>{
-html+=createEventCard(e)
+html += "<h4 class='mt-5 mb-3'>Team Events</h4>"
+
+teamEvents.forEach(event=>{
+html += renderEventCard(event)
 })
 
-analyticsContainer.innerHTML=html
+analyticsContainer.innerHTML = html
 
 }
 
 
-function createEventCard(event){
+// ======================
+// EVENT CARD GENERATOR
+// ======================
 
-let eng=[]
-let pharm=[]
-let arch=[]
+function renderEventCard(event){
+
+let eng = {}
+let pharm = {}
+let arch = {}
+
+let totalPlayers = event.players.length
+
+// GROUP PLAYERS BY TEAM
 
 event.players.forEach(p=>{
 
-if(p.school==="School of Engineering") eng.push(p)
-if(p.school==="School of Pharmacy") pharm.push(p)
-if(p.school==="School of Architecture") arch.push(p)
+let schoolGroup = null
 
-})
+if(p.school === "School of Engineering") schoolGroup = eng
+if(p.school === "School of Pharmacy") schoolGroup = pharm
+if(p.school === "School of Architecture") schoolGroup = arch
 
-function sortPlayers(arr){
+let team = p.team_name || "Individual"
 
-return arr.sort((a,b)=>{
-
-if(a.gender==="Girl" && b.gender==="Boy") return -1
-if(a.gender==="Boy" && b.gender==="Girl") return 1
-
-return a.roll_no.localeCompare(b.roll_no)
-
-})
-
+if(!schoolGroup[team]){
+schoolGroup[team] = []
 }
 
-eng=sortPlayers(eng)
-pharm=sortPlayers(pharm)
-arch=sortPlayers(arch)
+schoolGroup[team].push(p)
 
-function rows(players){
+})
 
-if(players.length===0) return "<tr><td colspan='3'>No registrations</td></tr>"
+function teamTables(group){
 
-let r=""
+let html = ""
 
-players.forEach(p=>{
-r+=`
+let teamNames = Object.keys(group)
+
+if(teamNames.length === 0){
+return "<tr><td colspan='2'>No registrations</td></tr>"
+}
+
+teamNames.forEach(team=>{
+
+html += `
+<tr>
+<td colspan="2" style="font-weight:600;padding-top:10px;">
+🏆 ${team}
+</td>
+</tr>
+`
+
+group[team].forEach(p=>{
+
+html += `
 <tr>
 <td>${p.name}</td>
 <td>${p.roll_no}</td>
-<td>${p.gender}</td>
 </tr>
 `
+
 })
 
-return r
+html += `
+<tr>
+<td colspan="2"><hr></td>
+</tr>
+`
+
+})
+
+return html
 
 }
 
+let engCount = Object.values(eng).flat().length
+let pharmCount = Object.values(pharm).flat().length
+let archCount = Object.values(arch).flat().length
+
+
 return `
 
-<div class="card shadow p-4 mb-4 event-card">
+<div class="card shadow p-4 mb-4">
 
-<h4>🏅 ${event.event} (${event.players.length} Participants)</h4>
+<h4 class="mb-3">🏅 ${event.event} (${totalPlayers} Participants)</h4>
 
 <div class="row">
 
 <div class="col-md-4">
 
-<div class="school-title">
-School of Engineering (${eng.length})
-</div>
+<h6>School of Engineering (${engCount})</h6>
 
 <table class="table table-sm">
 <thead>
 <tr>
 <th>Name</th>
 <th>Roll</th>
-<th>Gender</th>
 </tr>
 </thead>
 <tbody>
-${rows(eng)}
+${teamTables(eng)}
 </tbody>
 </table>
 
@@ -387,20 +624,17 @@ ${rows(eng)}
 
 <div class="col-md-4">
 
-<div class="school-title">
-School of Pharmacy (${pharm.length})
-</div>
+<h6>School of Pharmacy (${pharmCount})</h6>
 
 <table class="table table-sm">
 <thead>
 <tr>
 <th>Name</th>
 <th>Roll</th>
-<th>Gender</th>
 </tr>
 </thead>
 <tbody>
-${rows(pharm)}
+${teamTables(pharm)}
 </tbody>
 </table>
 
@@ -409,20 +643,17 @@ ${rows(pharm)}
 
 <div class="col-md-4">
 
-<div class="school-title">
-School of Architecture (${arch.length})
-</div>
+<h6>School of Architecture (${archCount})</h6>
 
 <table class="table table-sm">
 <thead>
 <tr>
 <th>Name</th>
 <th>Roll</th>
-<th>Gender</th>
 </tr>
 </thead>
 <tbody>
-${rows(arch)}
+${teamTables(arch)}
 </tbody>
 </table>
 
@@ -436,21 +667,58 @@ ${rows(arch)}
 
 }
 
+async function loadLeaderboard(){
 
-async function loadStats(){
+const res = await fetch("/admin/api/event-analytics")
+const data = await res.json()
 
-const players=await fetch("/admin/api/players").then(r=>r.json())
-const teams=await fetch("/admin/api/teams").then(r=>r.json())
+let schools = {
+"School of Engineering":0,
+"School of Pharmacy":0,
+"School of Architecture":0
+}
 
-playerCount.innerText=players.length
-teamCount.innerText=teams.length
+data.forEach(event=>{
+
+event.players.forEach(p=>{
+
+if(schools[p.school] !== undefined){
+schools[p.school]++
+}
+
+})
+
+})
+
+let arr = Object.entries(schools)
+
+arr.sort((a,b)=> b[1] - a[1])
+
+let medals = ["🥇","🥈","🥉"]
+
+let rows=""
+
+arr.forEach((s,i)=>{
+
+rows += `
+<tr>
+<td>${medals[i] || i+1}</td>
+<td>${s[0]}</td>
+<td>${s[1]}</td>
+</tr>
+`
+
+})
+
+document.getElementById("leaderboardTable").innerHTML = rows
 
 }
 
-
-loadStats()
+loadPlayers()
+loadTeams()
 loadEvents()
 loadAnalytics()
+loadLeaderboard()
 
 </script>
 
