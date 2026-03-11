@@ -113,11 +113,26 @@ def get_events():
 # ======================
 @coord_bp.route("/api/teams")
 def get_teams():
+    @coord_bp.route("/api/teams")
+def get_teams():
+
     try:
-        res = requests.get(
-            f"{SUPABASE_URL}/rest/v1/teams?select=*",
-            headers=HEADERS
-        )
+
+        event = request.args.get("event")
+
+        if event:
+
+            res = requests.get(
+                f"{SUPABASE_URL}/rest/v1/teams?sport=eq.{event}&select=*",
+                headers=HEADERS
+            )
+
+        else:
+
+            res = requests.get(
+                f"{SUPABASE_URL}/rest/v1/teams?select=*",
+                headers=HEADERS
+            )
 
         if res.status_code == 200:
             return jsonify(res.json())

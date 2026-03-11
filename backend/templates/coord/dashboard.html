@@ -161,7 +161,15 @@ document.getElementById("eventName").innerHTML=options
 
 async function loadTeams(){
 
-const res = await fetch("/coord/api/teams")
+const event = document.getElementById("eventName").value
+
+if(!event){
+document.getElementById("team1").innerHTML="<option>Select Team</option>"
+document.getElementById("team2").innerHTML="<option>Select Team</option>"
+return
+}
+
+const res = await fetch(`/coord/api/teams?event=${event}`)
 const teams = await res.json()
 
 let options="<option value=''>Select Team</option>"
@@ -250,8 +258,9 @@ showToast("Error scheduling match","danger")
 /* LOAD PAGE DATA */
 
 loadEvents()
-loadTeams()
 loadMatches()
+
+document.getElementById("eventName").addEventListener("change",loadTeams)
 
 </script>
 
