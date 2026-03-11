@@ -30,16 +30,8 @@ text-align:center;
 padding:25px;
 }
 
-.btn-dark{
-border-radius:30px;
-}
-
 .btn-danger:hover{
 transform:scale(1.05);
-}
-
-.team-divider{
-height:10px;
 }
 
 </style>
@@ -61,21 +53,21 @@ height:10px;
 
 <div class="row mb-4">
 
-<div class="col-lg-4 col-md-6">
+<div class="col-lg-4">
 <div class="card shadow stat-card">
 <h6>Total Players</h6>
 <h2 id="playerCount">0</h2>
 </div>
 </div>
 
-<div class="col-lg-4 col-md-6">
+<div class="col-lg-4">
 <div class="card shadow stat-card">
 <h6>Total Teams</h6>
 <h2 id="teamCount">0</h2>
 </div>
 </div>
 
-<div class="col-lg-4 col-md-6">
+<div class="col-lg-4">
 <div class="card shadow stat-card">
 <h6>Total Events</h6>
 <h2 id="eventCount">0</h2>
@@ -203,25 +195,22 @@ setTimeout(()=>toast.remove(),3000)
 }
 
 
-// ---------------- LOAD PLAYERS COUNT ----------------
+// =============================
+// LOAD COUNTS
+// =============================
 
 async function loadPlayers(){
 
 const res=await fetch("/admin/api/players")
-
 const data=await res.json()
 
 playerCount.innerText=data.length
 
 }
 
-
-// ---------------- LOAD TEAMS COUNT ----------------
-
 async function loadTeams(){
 
 const res=await fetch("/admin/api/teams")
-
 const data=await res.json()
 
 teamCount.innerText=data.length
@@ -229,15 +218,29 @@ teamCount.innerText=data.length
 }
 
 
-// ---------------- LOAD EVENTS TABLE ----------------
+// =============================
+// EVENTS TABLE (SORTED)
+// =============================
 
 async function loadEvents(){
 
 const res=await fetch("/admin/api/events")
-
 let data=await res.json()
 
 eventCount.innerText=data.length
+
+let individual=[]
+let team=[]
+
+data.forEach(e=>{
+if(e.type==="Individual") individual.push(e)
+else team.push(e)
+})
+
+individual.sort((a,b)=> new Date(a.date)-new Date(b.date))
+team.sort((a,b)=> new Date(a.date)-new Date(b.date))
+
+data=[...individual,...team]
 
 let rows=""
 
@@ -264,7 +267,6 @@ eventTable.innerHTML=rows
 
 }
 
-
 async function deleteEvent(id){
 
 if(!confirm("Delete this event?")) return
@@ -279,7 +281,9 @@ loadEvents()
 
 
 
-// ---------------- CREATE EVENT ----------------
+// =============================
+// CREATE EVENT
+// =============================
 
 eventForm.addEventListener("submit",async function(e){
 
@@ -314,93 +318,64 @@ loadEvents()
 
 
 
-
-// ---------------- ANALYTICS ----------------
+// =============================
+// EVENT ANALYTICS
+// =============================
 
 async function loadAnalytics(){
 
-const res = await fetch("/admin/api/event-analytics")
-let data = await res.json()
+const res=await fetch("/admin/api/event-analytics")
 
-// separate events
-let individualEvents = []
-let teamEvents = []
+let data=await res.json()
+
+let individual=[]
+let team=[]
 
 data.forEach(e=>{
-if(e.type === "Individual") individualEvents.push(e)
-else teamEvents.push(e)
+if(e.type==="Individual") individual.push(e)
+else team.push(e)
 })
 
-// sort by date
-individualEvents.sort((a,b)=> new Date(a.date) - new Date(b.date))
-teamEvents.sort((a,b)=> new Date(a.date) - new Date(b.date))
+individual.sort((a,b)=> new Date(a.date)-new Date(b.date))
+team.sort((a,b)=> new Date(a.date)-new Date(b.date))
 
-let html = ""
+let html=""
 
-// ======================
-// INDIVIDUAL EVENTS
-// ======================
+html+="<h4>Individual Events</h4>"
 
-html += "<h4 class='mb-3'>Individual Events</h4>"
-
-individualEvents.forEach(event=>{
-html += renderEventCard(event)
+individual.forEach(e=>{
+html+=renderEventCard(e)
 })
 
-// ======================
-// TEAM EVENTS
-// ======================
+html+="<h4 class='mt-4'>Team Events</h4>"
 
-html += "<h4 class='mt-5 mb-3'>Team Events</h4>"
-
-teamEvents.forEach(event=>{
-html += renderEventCard(event)
+team.forEach(e=>{
+html+=renderEventCard(e)
 })
 
-analyticsContainer.innerHTML = html
+analyticsContainer.innerHTML=html
 
 }
 
 
-// ======================
-// EVENT CARD GENERATOR
-// ======================
 
 function renderEventCard(event){
 
-let eng = []
-let pharm = []
-let arch = []
+let eng=[]
+let pharm=[]
+let arch=[]
 
 event.players.forEach(p=>{
 
-if(p.school === "School of Engineering") eng.push(p)
-if(p.school === "School of Pharmacy") pharm.push(p)
-if(p.school === "School of Architecture") arch.push(p)
+if(p.school==="School of Engineering") eng.push(p)
+if(p.school==="School of Pharmacy") pharm.push(p)
+if(p.school==="School of Architecture") arch.push(p)
 
 })
-
-// sort players
-function sortPlayers(arr){
-
-return arr.sort((a,b)=>{
-
-if(a.gender === "Girl" && b.gender === "Boy") return -1
-if(a.gender === "Boy" && b.gender === "Girl") return 1
-
-return a.roll_no.localeCompare(b.roll_no)
-
-})
-
-}
-
-eng = sortPlayers(eng)
-pharm = sortPlayers(pharm)
-arch = sortPlayers(arch)
 
 function rows(players){
 
-if(players.length === 0){
+if(players.length===0){
 return "<tr><td colspan='4'>No registrations</td></tr>"
 }
 
@@ -412,10 +387,10 @@ r+=`
 <tr>
 <td>${p.name}</td>
 <td>${p.roll_no}</td>
-<td>${p.gender}</td>
+<td>${p.team_name || "-"}</td>
 <td>
 <button class="btn btn-sm btn-danger"
-onclick="openDeleteModal('player','${p.id}','Delete this player?')">
+onclick="deletePlayer('${p.id}')">
 Delete
 </button>
 </td>
@@ -432,7 +407,7 @@ return `
 
 <div class="card shadow p-4 mb-4">
 
-<h4 class="mb-3">🏅 ${event.event} (${event.players.length} Participants)</h4>
+<h4>🏅 ${event.event} (${event.players.length} Participants)</h4>
 
 <div class="row">
 
@@ -445,7 +420,7 @@ return `
 <tr>
 <th>Name</th>
 <th>Roll</th>
-<th>Gender</th>
+<th>Team</th>
 <th></th>
 </tr>
 </thead>
@@ -466,7 +441,7 @@ ${rows(eng)}
 <tr>
 <th>Name</th>
 <th>Roll</th>
-<th>Gender</th>
+<th>Team</th>
 <th></th>
 </tr>
 </thead>
@@ -487,7 +462,7 @@ ${rows(pharm)}
 <tr>
 <th>Name</th>
 <th>Roll</th>
-<th>Gender</th>
+<th>Team</th>
 <th></th>
 </tr>
 </thead>
@@ -507,7 +482,10 @@ ${rows(arch)}
 }
 
 
-// ---------------- LEADERBOARD ----------------
+
+// =============================
+// LEADERBOARD
+// =============================
 
 async function loadLeaderboard(){
 
@@ -553,7 +531,9 @@ leaderboardTable.innerHTML=rows
 
 
 
-// ---------------- INIT ----------------
+// =============================
+// INIT
+// =============================
 
 loadPlayers()
 loadTeams()
