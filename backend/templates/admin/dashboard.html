@@ -319,122 +319,138 @@ loadEvents()
 
 async function loadAnalytics(){
 
-const res=await fetch("/admin/api/event-analytics")
+const res = await fetch("/admin/api/event-analytics")
+let data = await res.json()
 
-let data=await res.json()
-
-let individual=[]
-let team=[]
+// separate events
+let individualEvents = []
+let teamEvents = []
 
 data.forEach(e=>{
-if(e.type==="Individual") individual.push(e)
-else team.push(e)
+if(e.type === "Individual") individualEvents.push(e)
+else teamEvents.push(e)
 })
 
-individual.sort((a,b)=>new Date(a.date)-new Date(b.date))
-team.sort((a,b)=>new Date(a.date)-new Date(b.date))
+// sort by date
+individualEvents.sort((a,b)=> new Date(a.date) - new Date(b.date))
+teamEvents.sort((a,b)=> new Date(a.date) - new Date(b.date))
 
-let html=""
+let html = ""
 
-html+="<h4 class='mb-3'>Individual Events</h4>"
+// ======================
+// INDIVIDUAL EVENTS
+// ======================
 
-individual.forEach(e=>{
-html+=renderEvent(e,false)
+html += "<h4 class='mb-3'>Individual Events</h4>"
+
+individualEvents.forEach(event=>{
+html += renderEventCard(event)
 })
 
-html+="<h4 class='mt-5 mb-3'>Team Events</h4>"
+// ======================
+// TEAM EVENTS
+// ======================
 
-team.forEach(e=>{
-html+=renderEvent(e,true)
+html += "<h4 class='mt-5 mb-3'>Team Events</h4>"
+
+teamEvents.forEach(event=>{
+html += renderEventCard(event)
 })
 
-analyticsContainer.innerHTML=html
+analyticsContainer.innerHTML = html
 
 }
 
 
+// ======================
+// EVENT CARD GENERATOR
+// ======================
 
-function renderEvent(event,isTeam){
+function renderEventCard(event){
 
-let schools={
-"School of Engineering":{},
-"School of Pharmacy":{},
-"School of Architecture":{}
-}
+let eng = []
+let pharm = []
+let arch = []
 
 event.players.forEach(p=>{
 
-let teamName=isTeam ? p.team_name : "Individual"
-
-if(!schools[p.school][teamName]) schools[p.school][teamName]=[]
-
-schools[p.school][teamName].push(p)
+if(p.school === "School of Engineering") eng.push(p)
+if(p.school === "School of Pharmacy") pharm.push(p)
+if(p.school === "School of Architecture") arch.push(p)
 
 })
 
-function renderSchool(school){
+// sort players
+function sortPlayers(arr){
 
-let teams=schools[school]
+return arr.sort((a,b)=>{
 
-let teamNames=Object.keys(teams)
+if(a.gender === "Girl" && b.gender === "Boy") return -1
+if(a.gender === "Boy" && b.gender === "Girl") return 1
 
-let html=""
+return a.roll_no.localeCompare(b.roll_no)
 
-if(teamNames.length===0){
-
-return "<tr><td colspan='2'>No registrations</td></tr>"
+})
 
 }
 
-teamNames.forEach(team=>{
+eng = sortPlayers(eng)
+pharm = sortPlayers(pharm)
+arch = sortPlayers(arch)
 
-html+=`
-<tr>
-<td colspan="2" style="font-weight:600">🏆 ${team}</td>
-</tr>
-`
+function rows(players){
 
-teams[team].forEach(p=>{
+if(players.length === 0){
+return "<tr><td colspan='4'>No registrations</td></tr>"
+}
 
-html+=`
+let r=""
+
+players.forEach(p=>{
+
+r+=`
 <tr>
 <td>${p.name}</td>
 <td>${p.roll_no}</td>
+<td>${p.gender}</td>
+<td>
+<button class="btn btn-sm btn-danger"
+onclick="openDeleteModal('player','${p.id}','Delete this player?')">
+Delete
+</button>
+</td>
 </tr>
 `
 
 })
 
-html+=`<tr class="team-divider"><td colspan="2"></td></tr>`
-
-})
-
-return html
+return r
 
 }
-
-let engCount=Object.values(schools["School of Engineering"]).flat().length
-let pharmCount=Object.values(schools["School of Pharmacy"]).flat().length
-let archCount=Object.values(schools["School of Architecture"]).flat().length
 
 return `
 
 <div class="card shadow p-4 mb-4">
 
-<h4>🏅 ${event.event} (${event.players.length} Participants)</h4>
+<h4 class="mb-3">🏅 ${event.event} (${event.players.length} Participants)</h4>
 
 <div class="row">
 
 <div class="col-md-4">
 
-<h6>School of Engineering (${engCount})</h6>
+<h6>School of Engineering (${eng.length})</h6>
 
 <table class="table table-sm">
 <thead>
-<tr><th>Name</th><th>Roll</th></tr>
+<tr>
+<th>Name</th>
+<th>Roll</th>
+<th>Gender</th>
+<th></th>
+</tr>
 </thead>
 <tbody>
-${renderSchool("School of Engineering")}
+${rows(eng)}
 </tbody>
 </table>
 
@@ -443,14 +459,19 @@ ${renderSchool("School of Engineering")}
 
 <div class="col-md-4">
 
-<h6>School of Pharmacy (${pharmCount})</h6>
+<h6>School of Pharmacy (${pharm.length})</h6>
 
 <table class="table table-sm">
 <thead>
-<tr><th>Name</th><th>Roll</th></tr>
+<tr>
+<th>Name</th>
+<th>Roll</th>
+<th>Gender</th>
+<th></th>
+</tr>
 </thead>
 <tbody>
-${renderSchool("School of Pharmacy")}
+${rows(pharm)}
 </tbody>
 </table>
 
@@ -459,14 +480,19 @@ ${renderSchool("School of Pharmacy")}
 
 <div class="col-md-4">
 
-<h6>School of Architecture (${archCount})</h6>
+<h6>School of Architecture (${arch.length})</h6>
 
 <table class="table table-sm">
 <thead>
-<tr><th>Name</th><th>Roll</th></tr>
+<tr>
+<th>Name</th>
+<th>Roll</th>
+<th>Gender</th>
+<th></th>
+</tr>
 </thead>
 <tbody>
-${renderSchool("School of Architecture")}
+${rows(arch)}
 </tbody>
 </table>
 
