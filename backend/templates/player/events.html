@@ -28,10 +28,32 @@ background:rgba(255,255,255,0.95);
 .table th{
 text-align:left;
 vertical-align:middle;
+font-weight:600;
+padding:12px;
 }
 
 .table td{
 vertical-align:middle;
+padding:12px;
+}
+
+.table thead th{
+background:#212529;
+color:white;
+border:none;
+}
+
+/* Column width consistency */
+.col-event{
+width:40%;
+}
+
+.col-date{
+width:30%;
+}
+
+.col-location{
+width:30%;
 }
 
 @media (max-width:768px){
@@ -43,6 +65,12 @@ padding-right:15px;
 
 h4{
 font-size:18px;
+}
+
+.col-event,
+.col-date,
+.col-location{
+width:auto;
 }
 
 }
@@ -75,13 +103,13 @@ Back
 
 <h4 class="mb-3">🧍 Individual Events</h4>
 <div class="table-responsive">
-<table class="table table-striped">
+<table class="table table-striped mb-0">
 
-<thead class="table-dark">
+<thead>
 <tr>
-<th>Event Name</th>
-<th>Date</th>
-<th>Location</th>
+<th class="col-event">Event Name</th>
+<th class="col-date">Date</th>
+<th class="col-location">Location</th>
 </tr>
 </thead>
 
@@ -98,13 +126,13 @@ Back
 
 <h4 class="mb-3">👥 Team Events</h4>
 <div class="table-responsive">
-<table class="table table-striped">
+<table class="table table-striped mb-0">
 
-<thead class="table-dark">
+<thead>
 <tr>
-<th>Event Name</th>
-<th>Date</th>
-<th>Location</th>
+<th class="col-event">Event Name</th>
+<th class="col-date">Date</th>
+<th class="col-location">Location</th>
 </tr>
 </thead>
 
@@ -144,9 +172,9 @@ individualEvents.forEach(e=>{
 
 individualRows += `
 <tr>
-<td>${e.name}</td>
-<td>${e.date}</td>
-<td>${e.location}</td>
+<td class="col-event">${e.name}</td>
+<td class="col-date">${e.date}</td>
+<td class="col-location">${e.location}</td>
 </tr>
 `
 
@@ -156,9 +184,9 @@ teamEvents.forEach(e=>{
 
 teamRows += `
 <tr>
-<td>${e.name}</td>
-<td>${e.date}</td>
-<td>${e.location}</td>
+<td class="col-event">${e.name}</td>
+<td class="col-date">${e.date}</td>
+<td class="col-location">${e.location}</td>
 </tr>
 `
 
