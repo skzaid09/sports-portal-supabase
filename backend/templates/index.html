@@ -4,22 +4,95 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Sports Portal</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-</head>
-<body>
-  <div class="container-fluid vh-100 d-flex align-items-center justify-content-center bg-light">
-    <div class="text-center p-4 rounded shadow" style="max-width: 600px; background: white;">
-      <h1 class="mb-3">🏆 Sports Management Portal</h1>
-      <p>Scan the QR code or tap the link below to access the portal.</p>
-      
-      <div class="my-4">
-        <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" class="img-fluid" style="max-width: 250px;">
-      </div>
 
-      <p class="text-muted">Or tap here:</p>
-      <a href="{{ portal_url }}" class="btn btn-primary btn-lg mb-3">🔗 Open Portal</a>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style>
+    body{
+      min-height:100vh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      /* 🔥 Sports Background */
+      background-image: url("https://img.freepik.com/free-vector/sports-background-with-balls_23-2147838896.jpg");
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+
+    /* Glass Card Effect */
+    .portal-card{
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 600px;
+      width: 100%;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      text-align: center;
+      animation: fadeIn 0.8s ease-in-out;
+    }
+
+    /* Smooth Animation */
+    @keyframes fadeIn{
+      from{
+        opacity:0;
+        transform: translateY(20px);
+      }
+      to{
+        opacity:1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Button Styling */
+    .btn-primary{
+      border-radius: 30px;
+      padding: 10px 25px;
+      font-weight: 500;
+      transition: 0.3s;
+    }
+
+    .btn-primary:hover{
+      transform: scale(1.05);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    h1{
+      font-weight: 700;
+    }
+
+    .qr-img{
+      max-width: 250px;
+      border-radius: 12px;
+      padding: 10px;
+      background: white;
+    }
+
+  </style>
+
+</head>
+
+<body>
+
+  <div class="portal-card">
+
+    <h1 class="mb-3">🏆 Sports Management Portal</h1>
+
+    <p>Scan the QR code or tap the link below to access the portal.</p>
+    
+    <div class="my-4">
+      <img src="data:image/png;base64,{{ qr_code }}" alt="QR Code" class="qr-img">
     </div>
+
+    <p class="text-muted">Or tap here:</p>
+
+    <a href="{{ portal_url }}" class="btn btn-primary btn-lg mb-2">
+      🔗 Open Portal
+    </a>
+
   </div>
+
 </body>
 </html>

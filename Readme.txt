@@ -34,3 +34,10 @@ coord polish5 : in this coordinator dashboards works properly
 
 admin polish 2 : the almost fully correct and functional one
 
+android programming kai practical kai din issue is single page notification and ui and coordinate event name mai change karna hai 
+
+testing
+
+admin mai team delete nhi hoo raha hai also add loading animation or confirmation
+
+admin delete notification 
