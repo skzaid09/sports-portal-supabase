@@ -1,281 +1,113 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
-<title>Admin Dashboard</title>
-
+<title>Coordinator Dashboard</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
-
 body{
-background:linear-gradient(135deg,#1f4037,#99f2c8);
-min-height:100vh;
+    background:linear-gradient(135deg,#667eea,#764ba2);
+    min-height:100vh;
 }
 
 .navbar{
-background:linear-gradient(to right,#000428,#004e92);
+    background:linear-gradient(to right,#000428,#004e92);
 }
 
 .card{
-border-radius:18px;
-background:rgba(255,255,255,0.95);
+    border-radius:18px;
+    background:rgba(255,255,255,0.95);
 }
 
-.stat-card{
-text-align:center;
-padding:25px;
+.section-title{
+    font-weight:600;
+    margin-bottom:15px;
 }
 
-.btn-danger:hover{
-transform:scale(1.05);
+select,input{
+    height:45px;
 }
 
-/* Custom Modal Styles */
-.modal-overlay {
-display: none;
-position: fixed;
-top: 0;
-left: 0;
-width: 100%;
-height: 100%;
-background: rgba(0, 0, 0, 0.5);
-z-index: 9999;
-justify-content: center;
-align-items: center;
+@media (max-width:768px){
+
+.container{
+padding-left:15px;
+padding-right:15px;
 }
 
-.modal-overlay.active {
-display: flex;
+select,input{
+font-size:16px;
 }
 
-.modal-content {
-background: white;
-border-radius: 12px;
-padding: 0;
-max-width: 500px;
-width: 90%;
-box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-animation: modalSlide 0.3s ease;
-position: relative;
-}
-
-@keyframes modalSlide {
-from {
-opacity: 0;
-transform: translateY(-50px);
-}
-to {
-opacity: 1;
-transform: translateY(0);
-}
-}
-
-.modal-header {
-display: flex;
-align-items: center;
-justify-content: space-between;
-padding: 20px 25px;
-border-bottom: 1px solid #e9ecef;
-}
-
-.modal-title-container {
-display: flex;
-align-items: center;
-gap: 12px;
-}
-
-.modal-icon {
-font-size: 22px;
-}
-
-.modal-title {
-color: #dc3545;
-font-weight: 700;
-font-size: 20px;
-margin: 0;
-}
-
-.close-modal {
-background: none;
-border: none;
-font-size: 28px;
-color: #6c757d;
-cursor: pointer;
-line-height: 1;
-padding: 0;
-width: 30px;
-height: 30px;
-display: flex;
-align-items: center;
-justify-content: center;
-}
-
-.close-modal:hover {
-color: #333;
-}
-
-.modal-body {
-padding: 30px 25px;
-text-align: center;
-}
-
-.modal-message {
-color: #333;
-font-size: 16px;
-margin-bottom: 10px;
-font-weight: 500;
-}
-
-.modal-subtext {
-color: #6c757d;
-font-size: 14px;
-margin: 0;
-}
-
-.modal-footer {
-display: flex;
-gap: 12px;
-justify-content: center;
-padding: 20px 25px;
-border-top: 1px solid #e9ecef;
-}
-
-.modal-btn {
-padding: 10px 35px;
-border: none;
-border-radius: 6px;
-font-weight: 600;
-cursor: pointer;
-transition: all 0.3s;
-font-size: 14px;
-}
-
-.modal-btn-cancel {
-background: #6c757d;
-color: white;
-}
-
-.modal-btn-cancel:hover {
-background: #5a6268;
-transform: translateY(-2px);
-}
-
-.modal-btn-delete {
-background: #dc3545;
-color: white;
-}
-
-.modal-btn-delete:hover {
-background: #c82333;
-transform: translateY(-2px);
 }
 
 </style>
-
 </head>
 
 <body>
 
+<!-- NAVBAR -->
+
 <nav class="navbar navbar-dark shadow">
 <div class="container-fluid px-3">
-<span class="navbar-brand fw-bold">👑 Admin Dashboard</span>
+<span class="navbar-brand fw-bold">📅 Coordinator Panel</span>
 <a href="/" class="btn btn-outline-light btn-sm">Logout</a>
 </div>
 </nav>
 
-
 <div class="container mt-5 mb-5">
 
-<!-- STATS -->
+<!-- SCHEDULE MATCH -->
 
-<div class="row mb-4">
+<div class="card p-4 shadow mb-4">
 
-<div class="col-lg-4">
-<div class="card shadow stat-card">
-<h6>Individual Players</h6>
-<h2 id="playerCount">0</h2>
+<h4 class="section-title">⚽ Schedule Match</h4>
+
+<form id="scheduleForm">
+
+<label class="form-label">Select Event</label>
+<select class="form-control mb-3" id="eventName" required></select>
+
+<label class="form-label">Team 1</label>
+<select class="form-control mb-3" id="team1" required></select>
+
+<label class="form-label">Team 2</label>
+<select class="form-control mb-3" id="team2" required></select>
+
+<label class="form-label">Match Date</label>
+<input class="form-control mb-3" type="date" id="date" required>
+<div id="loader" class="text-center mb-3" style="display:none;">
+<div class="spinner-border text-primary"></div>
+<p class="mt-2">Scheduling Match...</p>
 </div>
-</div>
-
-<div class="col-lg-4">
-<div class="card shadow stat-card">
-<h6>Total Teams</h6>
-<h2 id="teamCount">0</h2>
-</div>
-</div>
-
-<div class="col-lg-4">
-<div class="card shadow stat-card">
-<h6>Total Events</h6>
-<h2 id="eventCount">0</h2>
-</div>
-</div>
-
-</div>
-
-
-<!-- CREATE EVENT -->
-
-<div class="card shadow p-4 mb-4">
-
-<h4>Create Event</h4>
-
-<form id="eventForm">
-
-<div class="row">
-
-<div class="col-lg-3">
-<input class="form-control mb-2" id="eventName" placeholder="Event Name" required>
-</div>
-
-<div class="col-lg-3">
-<select class="form-control mb-2" id="eventType" required>
-<option value="">Select Type</option>
-<option value="Individual">Individual</option>
-<option value="Team">Team</option>
-</select>
-</div>
-
-<div class="col-lg-3">
-<input type="date" class="form-control mb-2" id="eventDate" required>
-</div>
-
-<div class="col-lg-3">
-<input class="form-control mb-2" id="eventLocation" placeholder="Location" required>
-</div>
-
-</div>
-
-<button class="btn btn-dark w-100 mt-2">Create Event</button>
+<button class="btn btn-dark w-100">Schedule Match</button>
 
 </form>
 
 </div>
 
 
-<!-- EVENTS TABLE -->
+<!-- MATCHES TABLE -->
 
-<div class="card shadow p-4 mb-4">
+<div class="card p-4 shadow">
 
-<h4>📅 Events</h4>
-
+<h4 class="section-title">🎮 Scheduled Matches</h4>
+<div class="table-responsive">
 <table class="table table-striped">
 
-<thead>
+<thead class="table-dark">
 <tr>
-<th>Name</th>
-<th>Type</th>
+<th>Event</th>
+<th>Team 1</th>
+<th>Team 2</th>
 <th>Date</th>
-<th>Location</th>
-<th>Action</th>
+<th>Status</th>
 </tr>
 </thead>
 
-<tbody id="eventTable"></tbody>
+<tbody id="matchTable"></tbody>
 
 </table>
 
@@ -284,451 +116,153 @@ transform: translateY(-2px);
 </div>
 
 
-<div class="container mb-5">
+<!-- TOAST MESSAGE -->
 
-<!-- LEADERBOARD -->
-
-<div class="card shadow p-4 mb-4">
-
-<h4 class="mb-3">🏆 School Leaderboard</h4>
-
-<table class="table table-striped">
-
-<thead>
-<tr>
-<th>Rank</th>
-<th>School</th>
-<th>Total Participants</th>
-</tr>
-</thead>
-
-<tbody id="leaderboardTable"></tbody>
-
-</table>
-
-</div>
-
-
-<h3 class="mb-4">📊 Event Analytics</h3>
-
-<div id="analyticsContainer"></div>
-
-</div>
-
-<!-- Confirmation Modal -->
-<div class="modal-overlay" id="confirmModal">
-<div class="modal-content">
-<div class="modal-header">
-<div class="modal-title-container">
-<span class="modal-icon">⚠️</span>
-<h3 class="modal-title">Confirm Delete</h3>
-</div>
-<button class="close-modal" onclick="closeModal()">&times;</button>
-</div>
-<div class="modal-body">
-<p class="modal-message" id="modalMessage">Are you sure you want to delete this event?</p>
-<p class="modal-subtext">This action cannot be undone.</p>
-</div>
-<div class="modal-footer">
-<button class="modal-btn modal-btn-cancel" onclick="closeModal()">Cancel</button>
-<button class="modal-btn modal-btn-delete" id="confirmDeleteBtn">Delete</button>
+<div class="position-fixed bottom-0 end-0 p-3">
+<div id="liveToast" class="toast text-bg-success border-0">
+<div class="d-flex">
+<div class="toast-body" id="toastMessage"></div>
+<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
 </div>
 </div>
 </div>
 
 
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 
-let deleteCallback = null;
-
-function showToast(msg,type="success"){
-
-const toast=document.createElement("div")
-
-toast.className="toast show position-fixed bottom-0 end-0 m-3 text-bg-"+type
-
-toast.innerHTML=`<div class="toast-body">${msg}</div>`
-
-document.body.appendChild(toast)
-
-setTimeout(()=>toast.remove(),3000)
-
+function showToast(message,type="success"){
+const toastEl=document.getElementById("liveToast")
+toastEl.className="toast text-bg-"+type+" border-0"
+document.getElementById("toastMessage").innerText=message
+new bootstrap.Toast(toastEl).show()
 }
-
-
-function openModal(message, callback) {
-document.getElementById('modalMessage').textContent = message;
-deleteCallback = callback;
-document.getElementById('confirmModal').classList.add('active');
-}
-
-function closeModal() {
-document.getElementById('confirmModal').classList.remove('active');
-deleteCallback = null;
-}
-
-document.getElementById('confirmDeleteBtn').addEventListener('click', function() {
-if (deleteCallback) {
-deleteCallback();
-}
-closeModal();
-});
-
-// Close modal when clicking outside
-document.getElementById('confirmModal').addEventListener('click', function(e) {
-if (e.target === this) {
-closeModal();
-}
-});
-
-
-async function loadPlayers(){
-
-const res=await fetch("/admin/api/players")
-const data=await res.json()
-
-playerCount.innerText=data.length
-
-}
-
-async function loadTeams(){
-
-const res=await fetch("/admin/api/teams")
-const data=await res.json()
-
-teamCount.innerText=data.length
-
-}
-
 
 async function loadEvents(){
 
-const res=await fetch("/admin/api/events")
-let data=await res.json()
+const res = await fetch("/coord/api/events")
+const events = await res.json()
 
-eventCount.innerText=data.length
+let options="<option value=''>Select Event</option>"
 
-let individual=[]
-let team=[]
+events.forEach(e=>{
 
-data.forEach(e=>{
-if(e.type==="Individual") individual.push(e)
-else team.push(e)
+// show only TEAM events
+if(e.type && e.type.toLowerCase()=="team"){
+options+=`<option value="${e.name}">${e.name}</option>`
+}
+
 })
 
-individual.sort((a,b)=> new Date(a.date)-new Date(b.date))
-team.sort((a,b)=> new Date(a.date)-new Date(b.date))
+document.getElementById("eventName").innerHTML=options
 
-data=[...individual,...team]
+}
+
+
+async function loadTeams(){
+
+const event = document.getElementById("eventName").value
+
+if(!event){
+document.getElementById("team1").innerHTML="<option>Select Team</option>"
+document.getElementById("team2").innerHTML="<option>Select Team</option>"
+return
+}
+
+const res = await fetch(`/coord/api/teams?event=${event}`)
+const teams = await res.json()
+
+let options="<option value=''>Select Team</option>"
+
+teams.forEach(t=>{
+options+=`<option value="${t.team_name}">${t.team_name}</option>`
+})
+
+document.getElementById("team1").innerHTML=options
+document.getElementById("team2").innerHTML=options
+
+}
+
+
+async function loadMatches(){
+
+const res = await fetch("/coord/api/get-matches")
+const matches = await res.json()
 
 let rows=""
 
-data.forEach(e=>{
+matches.forEach(m=>{
 
 rows+=`
 <tr>
-<td>${e.name}</td>
-<td>${e.type}</td>
-<td>${e.date}</td>
-<td>${e.location}</td>
-<td>
-<button class="btn btn-danger btn-sm"
-onclick="deleteEvent('${e.id}')">
-Delete
-</button>
-</td>
+<td>${m.event ?? "-"}</td>
+<td>${m.team1}</td>
+<td>${m.team2}</td>
+<td>${m.date}</td>
+<td>${m.status}</td>
 </tr>
 `
 
 })
 
-eventTable.innerHTML=rows
+document.getElementById("matchTable").innerHTML=rows
 
 }
 
 
-async function loadAnalytics(){
+document.getElementById("scheduleForm").addEventListener("submit",async function(e){
 
-const res=await fetch("/admin/api/event-analytics")
-let data=await res.json()
+e.preventDefault()
 
-let individual=[]
-let team=[]
+const loader=document.getElementById("loader")
+loader.style.display="block"
 
-data.forEach(e=>{
-if(e.type==="Individual") individual.push(e)
-else team.push(e)
-})
+const event=document.getElementById("eventName").value
+const team1=document.getElementById("team1").value
+const team2=document.getElementById("team2").value
+const date=document.getElementById("date").value
 
-let html=""
-
-html+="<h4>Individual Events</h4>"
-
-individual.forEach(e=>{
-html+=renderEventCard(e)
-})
-
-html+="<h4 class='mt-4'>Team Events</h4>"
-
-team.forEach(e=>{
-html+=renderEventCard(e)
-})
-
-analyticsContainer.innerHTML=html
-
+if(team1===team2){
+loader.style.display="none"
+showToast("Team1 and Team2 cannot be same","danger")
+return
 }
 
-
-function renderEventCard(event){
-
-let eng=[]
-let pharm=[]
-let arch=[]
-
-event.players.forEach(p=>{
-
-if(p.school==="School of Engineering") eng.push(p)
-if(p.school==="School of Pharmacy") pharm.push(p)
-if(p.school==="School of Architecture") arch.push(p)
-
-})
-
-function rows(players){
-
-if(players.length===0){
-return "<tr><td colspan='4'>No registrations</td></tr>"
+const data={
+event:event,
+team1:team1,
+team2:team2,
+date:date
 }
 
-let grouped={}
-
-players.forEach(p=>{
-
-let team = p.team_name || "Individual"
-
-if(!grouped[team]) grouped[team]=[]
-
-grouped[team].push(p)
-
+const res=await fetch("/coord/api/schedule-match",{
+method:"POST",
+headers:{"Content-Type":"application/json"},
+body:JSON.stringify(data)
 })
 
-let html=""
+loader.style.display="none"
 
-Object.keys(grouped).forEach(team=>{
-
-grouped[team].forEach(p=>{
-
-html+=`
-<tr>
-<td>${p.name}</td>
-<td>${p.roll_no}</td>
-<td>${event.type === "Individual" ? p.gender : (team==="Individual" ? "-" : team)}</td>
-<td>
-<button class="btn btn-sm btn-danger"
-onclick="deletePlayer('${p.id}')">
-Delete
-</button>
-</td>
-</tr>
-`
-
-})
-
-html+=`<tr><td colspan="4"></td></tr>`
-
-})
-
-return html
-}
-
-return `
-
-<div class="card shadow p-4 mb-4">
-
-<h4>🏅 ${event.event} (${event.players.length} Participants)</h4>
-
-<div class="row">
-
-<div class="col-md-4">
-
-<h6>School of Engineering (${eng.length})</h6>
-
-<table class="table table-sm">
-<thead>
-<tr>
-<th>Name</th>
-<th>Roll</th>
-<th>${event.type === "Individual" ? "Gender" : "Team"}</th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-${rows(eng)}
-</tbody>
-</table>
-
-</div>
-
-<div class="col-md-4">
-
-<h6>School of Pharmacy (${pharm.length})</h6>
-
-<table class="table table-sm">
-<thead>
-<tr>
-<th>Name</th>
-<th>Roll</th>
-<th>${event.type === "Individual" ? "Gender" : "Team"}</th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-${rows(pharm)}
-</tbody>
-</table>
-
-</div>
-
-<div class="col-md-4">
-
-<h6>School of Architecture (${arch.length})</h6>
-
-<table class="table table-sm">
-<thead>
-<tr>
-<th>Name</th>
-<th>Roll</th>
-<th>${event.type === "Individual" ? "Gender" : "Team"}</th>
-<th></th>
-</tr>
-</thead>
-<tbody>
-${rows(arch)}
-</tbody>
-</table>
-
-</div>
-
-</div>
-
-</div>
-
-`
-
-}
-
-
-async function loadLeaderboard(){
-
-const res=await fetch("/admin/api/event-analytics")
-const data=await res.json()
-
-let schools={
-"School of Engineering":0,
-"School of Pharmacy":0,
-"School of Architecture":0
-}
-
-data.forEach(event=>{
-event.players.forEach(p=>{
-schools[p.school]++
-})
-})
-
-let arr=Object.entries(schools)
-
-arr.sort((a,b)=>b[1]-a[1])
-
-let medals=["🥇","🥈","🥉"]
-
-let rows=""
-
-arr.forEach((s,i)=>{
-
-rows+=`
-<tr>
-<td>${medals[i]}</td>
-<td>${s[0]}</td>
-<td>${s[1]}</td>
-</tr>
-`
-
-})
-
-leaderboardTable.innerHTML=rows
-
-}
-
-async function deleteEvent(id){
-
-openModal("Are you sure you want to delete this event?", async function() {
-try{
-
-const res = await fetch("/admin/api/delete-event/"+id,{
-method:"DELETE"
-})
-
-const result = await res.json()
+const result=await res.json()
 
 if(result.success){
-
-showToast("Event deleted successfully","success")
-
-loadEvents()
-
+showToast("Match Scheduled Successfully!")
+document.getElementById("scheduleForm").reset()
+loadMatches()
 }else{
-
-showToast("Delete failed","danger")
-
-}
-}catch(err){
-
-showToast("Server error","danger")
-
-}
-});
-
+showToast("Error scheduling match","danger")
 }
 
-async function deletePlayer(id){
-
-openModal("Are you sure you want to delete this player?", async function() {
-try{
-
-const res = await fetch("/admin/api/delete-player/"+id,{
-method:"DELETE"
 })
 
-const result = await res.json()
+/* LOAD PAGE DATA */
 
-if(result.success){
-
-showToast("Player deleted successfully","success")
-
-loadAnalytics()
-loadLeaderboard()
-
-}else{
-
-showToast("Delete failed","danger")
-
-}
-}catch(err){
-
-showToast("Server error","danger")
-
-}
-});
-
-}
-
-loadPlayers()
-loadTeams()
 loadEvents()
-loadAnalytics()
-loadLeaderboard()
+loadMatches()
+
+document.getElementById("eventName").addEventListener("change",loadTeams)
 
 </script>
 
 </body>
-
 </html>
