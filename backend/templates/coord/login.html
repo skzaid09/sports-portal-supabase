@@ -15,21 +15,26 @@
       align-items:center;
       justify-content:center;
 
-      /* 🔥 SPORTS BACKGROUND (DIFFERENT FROM ADMIN) */
-      background-image: url("https://images.unsplash.com/photo-1521417531039-4cba6f8a9c0c");
+      /* 🔥 SPORTS + SYSTEM FLOW BACKGROUND (LIKE YOUR IMAGE) */
+      background-image: url("https://img.freepik.com/free-photo/sports-tools_53876-138077.jpg");
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
       position: relative;
     }
 
-    /* 🔥 DARK OVERLAY */
+    /* 🔥 BLUE + RED OVERLAY (LIKE YOUR IMAGE STYLE) */
     body::before{
       content:"";
       position:absolute;
       width:100%;
       height:100%;
-      background: rgba(0,0,0,0.65);
+      background: linear-gradient(
+        90deg,
+        rgba(0,40,80,0.75),
+        rgba(120,0,0,0.75)
+      );
+      backdrop-filter: blur(3px);
       z-index:0;
     }
 
@@ -38,12 +43,12 @@
       position: relative;
       z-index:1;
       background: rgba(255,255,255,0.92);
-      backdrop-filter: blur(12px);
-      border-radius: 18px;
-      padding: 30px;
+      backdrop-filter: blur(15px);
+      border-radius: 20px;
+      padding: 32px;
       max-width: 400px;
       width: 100%;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      box-shadow: 0 12px 40px rgba(0,0,0,0.5);
       animation: fadeIn 0.7s ease;
     }
 
@@ -51,7 +56,7 @@
     @keyframes fadeIn{
       from{
         opacity:0;
-        transform: translateY(20px);
+        transform: translateY(25px);
       }
       to{
         opacity:1;
@@ -61,7 +66,7 @@
 
     h3{
       font-weight:700;
-      color:#ff9800; /* different color from admin */
+      color:#ff9800;
     }
 
     label{
@@ -70,10 +75,11 @@
     }
 
     .form-control{
-      border-radius:10px;
+      border-radius:12px;
+      padding:10px;
     }
 
-    /* 🔥 Button */
+    /* 🔥 Coordinator Button */
     .btn-warning{
       border-radius: 30px;
       padding: 10px;
