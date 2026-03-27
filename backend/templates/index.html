@@ -14,22 +14,35 @@
       align-items:center;
       justify-content:center;
 
-      /* 🔥 Sports Background */
-      background-image: url("https://img.freepik.com/free-vector/sports-background-with-balls_23-2147838896.jpg");
+      /* 🔥 NEW MULTI-SPORT BACKGROUND */
+      background-image: url("https://images.unsplash.com/photo-1517649763962-0c623066013b");
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
+      position: relative;
+    }
+
+    /* 🔥 Dark overlay for premium look */
+    body::before{
+      content:"";
+      position:absolute;
+      width:100%;
+      height:100%;
+      background: rgba(0,0,0,0.45);
+      z-index:0;
     }
 
     /* Glass Card Effect */
     .portal-card{
-      background: rgba(255,255,255,0.9);
-      backdrop-filter: blur(12px);
+      position: relative;
+      z-index:1;
+      background: rgba(255,255,255,0.92);
+      backdrop-filter: blur(15px);
       border-radius: 20px;
-      padding: 30px;
+      padding: 35px;
       max-width: 600px;
       width: 100%;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.4);
       text-align: center;
       animation: fadeIn 0.8s ease-in-out;
     }
@@ -38,7 +51,7 @@
     @keyframes fadeIn{
       from{
         opacity:0;
-        transform: translateY(20px);
+        transform: translateY(30px);
       }
       to{
         opacity:1;
@@ -46,28 +59,37 @@
       }
     }
 
+    h1{
+      font-weight: 700;
+      color:#222;
+    }
+
+    p{
+      color:#555;
+    }
+
+    /* QR */
+    .qr-img{
+      max-width: 240px;
+      border-radius: 15px;
+      padding: 12px;
+      background: #fff;
+      box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+    }
+
     /* Button Styling */
     .btn-primary{
       border-radius: 30px;
-      padding: 10px 25px;
+      padding: 12px 30px;
       font-weight: 500;
       transition: 0.3s;
+      background: linear-gradient(45deg,#007bff,#00c6ff);
+      border: none;
     }
 
     .btn-primary:hover{
-      transform: scale(1.05);
-      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
-    }
-
-    h1{
-      font-weight: 700;
-    }
-
-    .qr-img{
-      max-width: 250px;
-      border-radius: 12px;
-      padding: 10px;
-      background: white;
+      transform: scale(1.07);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.3);
     }
 
   </style>
@@ -88,7 +110,7 @@
 
     <p class="text-muted">Or tap here:</p>
 
-    <a href="{{ portal_url }}" class="btn btn-primary btn-lg mb-2">
+    <a href="{{ portal_url }}" class="btn btn-primary btn-lg">
       🔗 Open Portal
     </a>
 
