@@ -11,7 +11,6 @@
 
 <style>
 
-
 body{
 background:linear-gradient(135deg,#667eea,#4ba261);
 min-height:100vh;
@@ -24,6 +23,15 @@ background:linear-gradient(to right,#000428,#009292);
 .card{
 border-radius:18px;
 background:rgba(255,255,255,0.95);
+}
+
+.table th{
+text-align:left;
+vertical-align:middle;
+}
+
+.table td{
+vertical-align:middle;
 }
 
 @media (max-width:768px){
@@ -116,12 +124,23 @@ const res = await fetch("/player/api/events")
 
 const events = await res.json()
 
+// Filter individual and team events
+let individualEvents = events.filter(e => e.type === "Individual")
+let teamEvents = events.filter(e => e.type === "Team")
+
+// Sort by date in ascending order (chronological)
+individualEvents.sort((a, b) => {
+return new Date(a.date) - new Date(b.date)
+})
+
+teamEvents.sort((a, b) => {
+return new Date(a.date) - new Date(b.date)
+})
+
 let individualRows=""
 let teamRows=""
 
-events.forEach(e=>{
-
-if(e.type === "Individual"){
+individualEvents.forEach(e=>{
 
 individualRows += `
 <tr>
@@ -131,9 +150,9 @@ individualRows += `
 </tr>
 `
 
-}
+})
 
-if(e.type === "Team"){
+teamEvents.forEach(e=>{
 
 teamRows += `
 <tr>
@@ -142,8 +161,6 @@ teamRows += `
 <td>${e.location}</td>
 </tr>
 `
-
-}
 
 })
 

@@ -189,6 +189,11 @@ async function loadMatches(){
 const res = await fetch("/coord/api/get-matches")
 const matches = await res.json()
 
+// Sort matches by date in ascending order (chronological)
+matches.sort((a, b) => {
+return new Date(a.date) - new Date(b.date)
+})
+
 let rows=""
 
 matches.forEach(m=>{
