@@ -836,6 +836,65 @@ loadEvents()
 loadAnalytics()
 loadLeaderboard()
 
+// ======================
+// CREATE EVENT FIX
+// ======================
+document.getElementById("eventForm").addEventListener("submit", async function(e){
+
+e.preventDefault();
+
+const name = document.getElementById("eventName").value.trim();
+const type = document.getElementById("eventType").value;
+const date = document.getElementById("eventDate").value;
+const location = document.getElementById("eventLocation").value.trim();
+
+if(!name || !type || !date || !location){
+showToast("Please fill all fields","danger");
+return;
+}
+
+try{
+
+const res = await fetch("/admin/api/create-event",{
+method:"POST",
+headers:{
+"Content-Type":"application/json"
+},
+body: JSON.stringify({
+name:name,
+type:type,
+date:date,
+location:location
+})
+});
+
+const result = await res.json();
+
+if(result.success){
+
+showToast("Event created successfully","success");
+
+// reset form
+document.getElementById("eventForm").reset();
+
+// reload events
+loadEvents();
+
+}else{
+
+showToast("Failed to create event","danger");
+
+}
+
+}catch(err){
+
+console.error(err);
+showToast("Server error","danger");
+
+}
+
+});
+
 </script>
 
 </body>
